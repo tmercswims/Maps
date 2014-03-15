@@ -1,0 +1,36 @@
+README
+
+
+Design decisions:
+
+Vocab holds a trie and a dictionary. The trie is to generate valid words; the dictionary stores info about all the valid words.
+
+I decided not to implement that the bigrams kept track of "last word on line"-"first word on next line" pairs as this made one of the system tests fail.
+
+The Command Line is parsed by a Command Line Parser who juggles a lot of enums around and finally configures an Engine, which combines a searcher, a ranker and what have you all into a program you can run. Gui on/off also controlled by enum.
+
+KNOWN BUGS
+
+There's this one error in the basic tests which keeps on occuring, where "t he" is supposed to be ranked higher than "then" "they" and "them". Assuming sherlock.txt is being used as input, I don't see how this makes sense as all those appear far more frequently than "t" ever does but whatever. I'm handing it in now, and then fixing it later.
+
+TESTING
+
+All my JUnit Tests are in the test folder and are runnable in Eclipse (I tried configuring the build.xml file but it was a s***show). There are no system tests included - I tested by hand, simply making sure the results made sense.
+
+BUILD/RUN
+The code should really just run by referring to the autocorrect executable in the bin folder. The pathname should be given relative to the path you're currently in, so from bin it would be 
+./autocorrect [args]
+where args are the arguments as discussed in the spec: filenames, --gui, --whitespace, --prefix, --led [int] tags to turn on/off searchers.
+
+
+SMART SUGGESTION
+
+The suggestions are based on length.
+Exact match is still highest.
+
+If the word is two or three letters, prefix suggestions are favored
+If the word is four to 8 letters, levinshtein gains precedence;
+Whitespace splitting is always favored if the first split is four letters long or more
+
+I can't submit this yet! but i will try to by tomorrow night. This is literally jsut to salvage what i have just in case.
+

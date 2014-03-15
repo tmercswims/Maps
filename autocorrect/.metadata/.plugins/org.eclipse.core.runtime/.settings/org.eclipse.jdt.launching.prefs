@@ -1,0 +1,2 @@
+eclipse.preferences.version=1
+org.eclipse.jdt.launching.PREF_VM_XML=<?xml version\="1.0" encoding\="UTF-8" standalone\="no"?>\n<vmSettings defaultVM\="57,org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType13,1391626603627" defaultVMConnector\="">\n<vmType id\="org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType">\n<vm id\="1391626532345" name\="java-6-openjdk-amd64" path\="/usr/lib/jvm/java-6-openjdk-amd64"/>\n<vm id\="1391626603627" name\="jdk1.7.0_21" path\="/pro/java/linux/jdk1.7"/>\n</vmType>\n</vmSettings>\n

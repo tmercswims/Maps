@@ -1,0 +1,43 @@
+package frontend;
+import javax.swing.*;
+import java.awt.*;
+
+import autocorrect.Engine;
+
+public class Gui implements PresentingResults {
+
+	private Engine engine;
+	
+	public Gui(Engine engine){
+		this.engine = engine;
+	}
+	
+	@Override
+	public void run() {
+		JFrame frame = new JFrame("Autocorrect");
+		frame.setSize(500, 170);
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		
+		JPanel panel = new JPanel(new BorderLayout());
+		JLabel inputLabel = new JLabel("Enter your search here:");
+		panel.add(inputLabel, BorderLayout.NORTH);
+		JTextField input = new JTextField();
+		input.setColumns(50);
+		input.setVisible(true);
+		JTextArea output = new JTextArea();
+		output.setRows(5);
+		output.setEditable(false);
+
+		panel.add(output, BorderLayout.SOUTH);
+		panel.add(input, BorderLayout.CENTER);
+		input.getDocument().addDocumentListener(new OutputUpdater(input, output, engine));
+		frame.add(panel);
+
+		
+		frame.setVisible(true);
+		
+		
+
+	}
+
+}

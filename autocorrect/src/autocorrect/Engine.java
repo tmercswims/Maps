@@ -1,0 +1,97 @@
+package autocorrect;
+
+
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+
+import dictionary.Entry;
+
+import ranker.BasicRanker;
+import searcher.Searcher;
+
+/** Engine coordinates the searching and running of autocorrect, and generates the top five results for use by the UIs
+ * 
+ * @author ja11
+ *
+ */
+public class Engine implements Runnable {
+	
+	/** The Searcher which the Engine will use to find suggestions **/
+	private Searcher searcher;
+	/** The Enum determining which Ranking Method will eventually be chosen **/
+	private RankerEnums ranker;
+	
+	/**Constructor
+	 * 
+	 * @param searcher: a Searcher
+	 * @param ranker: a Rankers enum
+	 */
+	public Engine(Searcher searcher, RankerEnums ranker){
+		this.searcher = searcher;
+		this.ranker = ranker;
+	}
+
+	/**getTopFiveResults outputs an ordered list of the best corrects for word given it follows prevWord
+	 * @param prevWord: the String word preceding the word we're searching for
+	 * @param word: the word we're seeking to autocorrect
+	 * 
+	 * @return a List<Entry> of the words that are most likely to be good corrections for word
+	 */
+	@Override
+	public List<Entry> getTopFiveResults(String prevWord, String word) {
+		
+		//Chooses the Ranking Method based on the ranker enum
+		Comparator<Entry> rankingMethod;
+		switch(ranker){
+		case BASICRANKER: rankingMethod = new BasicRanker(prevWord, word); 
+							break;
+		case MYRANKER:	 rankingMethod = new BasicRanker(prevWord, word);
+						break;
+		default: rankingMethod = new BasicRanker(prevWord, word); break;
+		}
+		
+		//finds all the words and sorts them according to the ranking method
+		ArrayList<Entry> toRank = new ArrayList<Entry>();
+		toRank.addAll(searcher.find(word));
+		Collections.sort(toRank, Collections.reverseOrder(rankingMethod));
+		
+		//Returns at most five results
+		if (toRank.size() < 5) return toRank;
+		else return toRank.subList(0, 5);
+	}
+	
+	/**getTopFiveResults outputs an ordered list of the best corrects for word without context
+	 * @param word: the word we're seeking to autocorrect
+	 * 
+	 * @return a List<Entry> of the words that are most likely to be good corrections for word
+	 */
+	@Override
+	public List<Entry> getTopFiveResults(String word) {
+		//Chooses the Ranking Method based on the ranker enum
+		Comparator<Entry> rankingMethod;
+		switch(ranker){
+		case BASICRANKER: rankingMethod = new BasicRanker(word); 
+							break;
+		case MYRANKER:	 rankingMethod = new BasicRanker(word);
+						break;
+		default: rankingMethod = new BasicRanker(word); break;
+		}
+		
+		//finds all the words and sorts them according to the ranking method
+		ArrayList<Entry> toRank = new ArrayList<Entry>();
+		toRank.addAll(searcher.find(word));
+		Collections.sort(toRank, Collections.reverseOrder(rankingMethod));
+		if (word.equals("bo")){
+			for (Entry i : toRank){
+				System.out.println(i.getString()+i.getBigramProb("the"));
+			}
+		}
+		//Returns at most five results
+		if (toRank.size() < 5) return toRank;
+		else return toRank.subList(0, 5);
+	}
+
+}

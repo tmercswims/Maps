@@ -1,0 +1,69 @@
+package dictionary;
+
+import static org.junit.Assert.*;
+
+import org.junit.Test;
+
+public class WordEntryTest {
+
+	@Test
+	public void getStringTest() {
+		WordEntry test = new WordEntry("test");
+		assertTrue(test.getString().equals("test"));
+	}
+	
+	@Test
+	//This test has to be circumstantial as we can't access total publically, but we can infer it changes
+	//by the changing probabilities of unigramProbabilities.
+	public void setTotalTest(){
+		WordEntry test = new WordEntry("test");
+		test.setTotal(1);
+		assertTrue(test.getUnigramProb() == 1);
+		test.setTotal(4);
+		assertTrue(test.getUnigramProb() == 0.25);	
+	}
+	
+	//This is identical as above; I include it to have one test per method but getUnigramProb has been
+	//implicitly tested already
+	public void getUnigramProbTest(){
+		WordEntry test = new WordEntry("test");
+		test.setTotal(1);
+		assertTrue(test.getUnigramProb() == 1);
+		test.setTotal(5);
+		assertTrue(test.getUnigramProb() == 0.2);	
+	}
+	
+	@Test
+	public void addUnigramCountTest(){
+		WordEntry test = new WordEntry("test");
+		test.setTotal(5);
+		assertTrue(test.getUnigramProb()==0.2);
+		test.addUnigramCount();
+		assertTrue(test.getUnigramProb()==0.4);
+	}
+	
+	@Test
+	public void addBigramCountTest(){
+		WordEntry test = new WordEntry("test");
+		test.setTotal(10);
+		test.addBigramCount("a");
+		assertTrue(test.getBigramProb("a")==0.1);
+		test.addBigramCount("a");
+		assertTrue(test.getBigramProb("a")==0.2);
+	}
+	
+	@Test
+	public void getBigramProbTest(){
+		WordEntry test = new WordEntry("test");
+		test.setTotal(10);
+		test.addBigramCount("a");
+		assertTrue(test.getBigramProb("a")==0.1);
+		test.addBigramCount("a");
+		assertTrue(test.getBigramProb("a")==0.2);
+		assertTrue(test.getBigramProb("notaword") == 0);
+	}
+	
+	
+	
+
+}

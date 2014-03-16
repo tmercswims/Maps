@@ -59,7 +59,7 @@ public class MapsFrame extends JFrame {
             public void actionPerformed(ActionEvent e) {
                 if (!one.getText().equals("") && !two.getText().equals("") && !three.getText().equals("") && !four.getText().equals("")) {
                     System.out.println("*****THIS NEEDS TO BE THREADED STILL*****");
-                    List<String>[] path;
+                    List<List<String>> path;
                     try {
                         path = map.getPath(one.getText(), two.getText(), three.getText(), four.getText());
                     } catch (IOException ex) {

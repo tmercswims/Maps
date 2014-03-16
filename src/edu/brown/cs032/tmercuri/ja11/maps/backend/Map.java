@@ -30,14 +30,14 @@ public class Map {
         this.graph = new Graph<>(getGraphableForGraph(waysFilename, nodesFilename, indexFilename));
     }
     
-    public List<String>[] getPath(String st1, String cst1, String st2, String cst2) throws IOException {
+    public List<List<String>> getPath(String st1, String cst1, String st2, String cst2) throws IOException {
         String inter1 = graph.findIntersection(st1, cst1);
         String inter2 = graph.findIntersection(st2, cst2);
         graph.computePathA(inter1, inter2);
         return graph.returnShortestPathToFromA(inter1, inter2);
     }
     
-    public List<String>[] getPath(double lat1, double lng1, double lat2, double lng2) throws IOException {
+    public List<List<String>> getPath(double lat1, double lng1, double lat2, double lng2) throws IOException {
         String inter1 = getNearestPointTo(lat1, lng1);
         String inter2 = getNearestPointTo(lat2, lng2);
         System.out.println("inter1 "+inter1);

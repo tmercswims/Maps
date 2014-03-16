@@ -78,7 +78,7 @@ public class Maps {
             if (lineWords.length != 4) {
                 throw new IllegalArgumentException("bad input");
             }
-            List[] path;
+            List<List<String>> path;
             // in quotes, assume we are given cross streets
             if (lineWords[0].startsWith("\"")) {
                 path = map.getPath(lineWords[0].replaceAll("\"", ""), lineWords[1].replaceAll("\"", ""), lineWords[2].replaceAll("\"", ""), lineWords[3].replaceAll("\"", ""));
@@ -90,12 +90,12 @@ public class Maps {
         }
     }
     
-    private static void printPath(List<String>[] path) {
+    private static void printPath(List<List<String>> path) {
         // Lists for edges and nodes on the path
-        List<String> edges = path[0];
-        List<String> nodes = path[1];
-        String sourceID = path[2].get(0);
-        String targetID = path[2].get(1);
+        List<String> edges = path.get(0);
+        List<String> nodes = path.get(1);
+        String sourceID = path.get(2).get(0);
+        String targetID = path.get(2).get(1);
         
         // if the first node is not the given source or the target and source are the same, then a path doesn't exist
         if (!nodes.get(0).equals(sourceID) || targetID.equals(sourceID)) {

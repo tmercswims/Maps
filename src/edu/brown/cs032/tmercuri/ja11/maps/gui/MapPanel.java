@@ -15,6 +15,8 @@ import javax.swing.JPanel;
  */
 public class MapPanel extends JPanel {
     
+    static final long serialVersionUID = 420L;
+    
     public MapPanel(LayoutManager manager) {
         super(manager);
         setBackground(Color.yellow);

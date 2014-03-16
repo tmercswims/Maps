@@ -7,7 +7,6 @@ package edu.brown.cs032.tmercuri.ja11.maps.gui;
 
 import edu.brown.cs032.tmercuri.ja11.maps.backend.Map;
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;

@@ -40,8 +40,10 @@ public class Map {
     public List<String>[] getPath(double lat1, double lng1, double lat2, double lng2) throws IOException {
         String inter1 = getNearestPointTo(lat1, lng1);
         String inter2 = getNearestPointTo(lat2, lng2);
+        System.out.println("inter1 "+inter1);
+        System.out.println("inter2 "+inter2);
         graph.computePathA(inter1, inter2);
-        return graph.returnShortestPathToFromA(inter1, inter2);
+        return graph.returnShortestPathToFromA(inter2, inter1);
     }
     
     private String getNearestPointTo(double lat, double lng) {

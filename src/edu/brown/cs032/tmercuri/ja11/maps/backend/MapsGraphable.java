@@ -49,7 +49,7 @@ public class MapsGraphable implements Graphable<String> {
 
     @Override
     public String getName(String ID) throws IOException {
-        throw new UnsupportedOperationException("Not supported -- Streets don't have searchable IDs :(.");
+        return ways.lookup(ID, "id", "name");
     }
 
     @Override

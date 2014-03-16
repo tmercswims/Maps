@@ -10,7 +10,7 @@ package edu.brown.cs032.tmercuri.kdtree;
  * @author Thomas Mercurio
  * @param <T> type of this node; must extend Dimension
  */
-public class KDNode<T extends Dimension> {
+public class KDNode<T extends Dimension<?>> {
         
     private final T point;
     KDNode<T> left;

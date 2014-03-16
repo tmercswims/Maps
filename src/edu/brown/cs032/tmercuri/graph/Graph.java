@@ -162,7 +162,9 @@ public class Graph<T> {
     public List<List<T>> returnShortestPathToFromA(final T targetID, final T sourceID) throws IOException {
         final List<T> edges = new ArrayList<>();
         final List<T> nodes = new ArrayList<>();
-        final List<T> endpoints = new ArrayList<T>(){{add(sourceID); add(targetID);}};
+        final List<T> endpoints = new ArrayList<>();
+        endpoints.add(sourceID);
+        endpoints.add(targetID);
         
         // contruct the path, starting form the target and following the previouses
         for (T n=targetID; n!=null; n=previous.get(n)) {
@@ -177,7 +179,12 @@ public class Graph<T> {
         minDistance.clear();
         minEdge.clear();
         
-        return new ArrayList<List<T>>(){{add(edges);add(nodes);add(endpoints);}};
+        List<List<T>> ret = new ArrayList<>();
+        ret.add(edges);
+        ret.add(nodes);
+        ret.add(endpoints);
+        
+        return ret;
     }
     
     /**

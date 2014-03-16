@@ -54,7 +54,7 @@ public abstract class Dimension<U> {
      * @return the squared distance between d1 and d2
      * @throws IllegalArgumentException if d1 and d2 are of different dimension
      */
-    public static double distance(Dimension d1, Dimension d2) throws IllegalArgumentException {
+    public static double distance(Dimension<?> d1, Dimension<?> d2) throws IllegalArgumentException {
         if (d1.getDimension() != d2.getDimension()) {
             throw new IllegalArgumentException("Points are of different dimensions: " + d1.getDimension() + ", " + d2.getDimension());
         }

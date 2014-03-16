@@ -12,7 +12,9 @@ import java.util.ArrayList;
 public class LatLng extends Dimension<String> {
     
     public LatLng(String _id, final double lat, final double lng) {
-        this.coordinates = new ArrayList<Double>(){{add(lat);add(lng);}};
+        this.coordinates = new ArrayList<>();
+        coordinates.add(lat);
+        coordinates.add(lng);
         this.id = _id;
         this.dimension = 2;
     }

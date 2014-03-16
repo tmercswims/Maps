@@ -24,13 +24,15 @@ import javax.swing.event.DocumentListener;
  */
 public class AutoCorrectedField extends JPanel {
     
+    static final long serialVersionUID = 42069L;
+    
     private final JTextField field;
-    private final JList list;
+    private final JList<String> list;
     
     public AutoCorrectedField() {
         super(new BorderLayout());
         this.field = new JTextField();
-        this.list = new JList();
+        this.list = new JList<>();
         buildPanel();
     }
 
@@ -39,7 +41,7 @@ public class AutoCorrectedField extends JPanel {
             @Override
             public void insertUpdate(DocumentEvent e) {
                 // generate suggestions for the text in the field
-                List<String> results = new ArrayList<String>(){{add("1");add("2");add("3");}};
+                List<String> results = new ArrayList<>(); // <- THIS LIST SHOULD CONTAIN THE AUTOCORRECTED THINGS
                 // put them in an array
                 String[] resultsArr = new String[results.size()];
                 // set that array as the list data
@@ -49,14 +51,14 @@ public class AutoCorrectedField extends JPanel {
             }
             @Override
             public void removeUpdate(DocumentEvent e) {
-                List<String> results = new ArrayList<String>(){{}};
+                List<String> results = new ArrayList<>();  // <- THIS LIST SHOULD CONTAIN THE AUTOCORRECTED THINGS
                 String[] resultsArr = new String[results.size()];
                 list.setListData(results.toArray(resultsArr));
                 list.setVisible(results.size() > 0);
             }
             @Override
             public void changedUpdate(DocumentEvent e) {
-                List<String> results = new ArrayList<String>(){{add("1");add("2");add("3");}};
+                List<String> results = new ArrayList<>();  // <- THIS LIST SHOULD CONTAIN THE AUTOCORRECTED THINGS
                 String[] resultsArr = new String[results.size()];
                 list.setListData(results.toArray(resultsArr));
                 list.setVisible(results.size() > 0);

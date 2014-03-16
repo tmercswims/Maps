@@ -49,10 +49,10 @@ public class MapsFrame extends JFrame {
         JPanel inputFields = new JPanel(new GridLayout(1, 4, 3, 3));
         
         final AutoCorrectedField one, two, three, four;
-        one = new AutoCorrectedField();
-        two = new AutoCorrectedField();
-        three = new AutoCorrectedField();
-        four = new AutoCorrectedField();
+        one = new AutoCorrectedField(map);
+        two = new AutoCorrectedField(map);
+        three = new AutoCorrectedField(map);
+        four = new AutoCorrectedField(map);
         
         ActionListener mapsListener = new ActionListener() {
             @Override

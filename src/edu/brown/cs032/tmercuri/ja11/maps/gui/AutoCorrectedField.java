@@ -5,6 +5,7 @@
 
 package edu.brown.cs032.tmercuri.ja11.maps.gui;
 
+import edu.brown.cs032.tmercuri.ja11.maps.backend.Map;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Font;
@@ -28,11 +29,13 @@ public class AutoCorrectedField extends JPanel {
     
     private final JTextField field;
     private final JList<String> list;
+    private final Map map;
     
-    public AutoCorrectedField() {
+    public AutoCorrectedField(Map map) {
         super(new BorderLayout());
         this.field = new JTextField();
         this.list = new JList<>();
+        this.map = map;
         buildPanel();
     }
 
@@ -41,7 +44,7 @@ public class AutoCorrectedField extends JPanel {
             @Override
             public void insertUpdate(DocumentEvent e) {
                 // generate suggestions for the text in the field
-                List<String> results = new ArrayList<>(); // <- THIS LIST SHOULD CONTAIN THE AUTOCORRECTED THINGS
+                List<String> results = new ArrayList<>(); // <- THIS LIST SHOULD CONTAIN THE AUTOCORRECTED THINGS, ie map.getSuggestions()
                 // put them in an array
                 String[] resultsArr = new String[results.size()];
                 // set that array as the list data
@@ -51,14 +54,14 @@ public class AutoCorrectedField extends JPanel {
             }
             @Override
             public void removeUpdate(DocumentEvent e) {
-                List<String> results = new ArrayList<>();  // <- THIS LIST SHOULD CONTAIN THE AUTOCORRECTED THINGS
+                List<String> results = new ArrayList<>();  // <- THIS LIST SHOULD CONTAIN THE AUTOCORRECTED THINGS, ie map.getSuggestions()
                 String[] resultsArr = new String[results.size()];
                 list.setListData(results.toArray(resultsArr));
                 list.setVisible(results.size() > 0);
             }
             @Override
             public void changedUpdate(DocumentEvent e) {
-                List<String> results = new ArrayList<>();  // <- THIS LIST SHOULD CONTAIN THE AUTOCORRECTED THINGS
+                List<String> results = new ArrayList<>();  // <- THIS LIST SHOULD CONTAIN THE AUTOCORRECTED THINGS, ie map.getSuggestions()
                 String[] resultsArr = new String[results.size()];
                 list.setListData(results.toArray(resultsArr));
                 list.setVisible(results.size() > 0);

@@ -39,6 +39,14 @@ public class Graph<T> {
         this.previous = new HashMap<>();
     }
     
+    public double getLat(T p) throws IOException {
+        return g.getLat(p);
+    }
+    
+    public double getLng(T p) throws IOException {
+        return g.getLng(p);
+    }
+    
     public String findIntersection(T street, T crossStreet) throws IOException {
         List<String> nodesOnStreet = g.getNodesOnStreet(street);
         List<String> nodesOnCrossStreet = g.getNodesOnStreet(crossStreet);

@@ -46,6 +46,10 @@ public class Map {
         return graph.returnShortestPathToFromA(inter2, inter1);
     }
     
+    public List<String> getAllPointsWithinRadius(int r, String refID) throws IOException {
+        return this.tree.findAllWithinRadius(r, true, new LatLng("", graph.getLat(refID), graph.getLng(refID)));
+    }
+    
     private String getNearestPointTo(double lat, double lng) {
         LatLng ref = new LatLng("", lat, lng);
         return tree.findNearestNeighbor(ref);

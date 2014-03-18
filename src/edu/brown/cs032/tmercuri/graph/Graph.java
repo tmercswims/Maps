@@ -47,6 +47,22 @@ public class Graph<T> {
         return g.getLng(p);
     }
     
+    public List<String> getWaysThatCrossNode(T ID) throws IOException {
+        return g.getWaysThatCrossNode(ID);
+    }
+    
+    public String getStartOfWay(T ID) throws IOException {
+        return g.getStartOfWay(ID);
+    }
+    
+    public String getEndOfWay(T ID) throws IOException {
+        return g.getEndOfWay(ID);
+    }
+    
+    public T getWayName(T ID) throws IOException {
+        return g.getStreetName(ID);
+    }
+    
     public String findIntersection(T street, T crossStreet) throws IOException {
         List<String> nodesOnStreet = g.getNodesOnStreet(street);
         List<String> nodesOnCrossStreet = g.getNodesOnStreet(crossStreet);
@@ -133,7 +149,7 @@ public class Graph<T> {
     }
     
     /**
-     * Prints the path from targetName to sourceName
+     * Prints the path from targetStreetName to sourceName
      * @param targetID
      * @param sourceID
      * @throws IOException 

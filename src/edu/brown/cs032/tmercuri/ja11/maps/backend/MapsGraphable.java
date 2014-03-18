@@ -38,6 +38,21 @@ public class MapsGraphable implements Graphable<String> {
     }
     
     @Override
+    public List<String> getWaysThatCrossNode(String ID) throws IOException {
+        return Arrays.asList(nodes.lookup(ID, "id", "ways").split(","));
+    }
+    
+    @Override
+    public String getStartOfWay(String ID) throws IOException {
+        return ways.lookup(ID, "id", "start");
+    }
+    
+    @Override
+    public String getEndOfWay(String ID) throws IOException {
+        return ways.lookup(ID, "id", "end");
+    }
+    
+    @Override
     public double getLat(String ID) throws IOException {
         return Double.parseDouble(nodes.lookup(ID, "id", "latitude"));
     }
@@ -48,7 +63,7 @@ public class MapsGraphable implements Graphable<String> {
     }
 
     @Override
-    public String getName(String ID) throws IOException {
+    public String getStreetName(String ID) throws IOException {
         return ways.lookup(ID, "id", "name");
     }
 

@@ -5,7 +5,7 @@
 
 package edu.brown.cs032.tmercuri.ja11.maps.gui;
 
-import edu.brown.cs032.tmercuri.ja11.maps.backend.Map;
+import edu.brown.cs032.tmercuri.ja11.maps.backend.MapData;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Font;
@@ -29,11 +29,12 @@ public class AutoCorrectedField extends JPanel {
     
     private final JTextField field;
     private final JList<String> list;
-    private final Map map;
+    private final MapData map;
     
-    public AutoCorrectedField(Map map) {
+    public AutoCorrectedField(MapData map, String fieldToolTip) {
         super(new BorderLayout());
         this.field = new JTextField();
+        field.setToolTipText(fieldToolTip);
         this.list = new JList<>();
         this.map = map;
         buildPanel();
@@ -77,8 +78,7 @@ public class AutoCorrectedField extends JPanel {
         add(field, BorderLayout.NORTH);
         add(list, BorderLayout.CENTER);
         list.setListData(new String[]{" "," "," "," "," "});
-        
-        
+        list.setFocusable(false);
         
         list.setVisible(false);
         setOpaque(false);

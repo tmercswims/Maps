@@ -29,9 +29,15 @@ public interface Graphable<T> {
      * @return the name of the ID
      * @throws IOException if the file was unable to be read
      */
-    public T getName(T ID) throws IOException;
+    public T getStreetName(T ID) throws IOException;
     
     public List<String> getNodesOnStreet(T name) throws IOException;
+    
+    public List<String> getWaysThatCrossNode(T ID) throws IOException;
+    
+    public String getStartOfWay(T ID) throws IOException;
+    
+    public String getEndOfWay(T ID) throws IOException;
     
     public double getLat(T ID) throws IOException;
     

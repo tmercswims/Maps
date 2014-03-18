@@ -6,7 +6,6 @@
 package edu.brown.cs032.tmercuri.ja11.maps.backend;
 
 import edu.brown.cs032.tmercuri.ja11.maps.gui.MapsFrame;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.List;
 import java.util.Scanner;
@@ -52,20 +51,18 @@ public class Maps {
                 GUI = new MapsFrame(null);
             }
 
-            Map map = new Map(waysFilename, nodesFilename, IndexFilename);
+            MapData map = new MapData(waysFilename, nodesFilename, IndexFilename);
             if (GUI != null) {
                 GUI.setMap(map);
             } else {
                 commandLineInterface(map);
             }
-        } catch (FileNotFoundException ex) {
-            System.err.println("ERROR: file not found: " + ex.getMessage());
         } catch (IOException /*| RuntimeException*/ ex) {
             System.err.println("ERROR: " + ex.getMessage());
         }
     }
     
-    private static void commandLineInterface(Map map) throws IOException {
+    private static void commandLineInterface(MapData map) throws IOException {
         Scanner s = new Scanner(System.in);
         while(s.hasNextLine()) {
             String line = s.nextLine().replaceAll("\\s+", " ");

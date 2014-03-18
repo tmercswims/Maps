@@ -21,4 +21,7 @@ public class MapPanel extends JPanel {
         super(manager);
         setBackground(Color.yellow);
     }
+    
+    // DO THINGS TO MAKE THIS A MAP
+    // WOO
 }

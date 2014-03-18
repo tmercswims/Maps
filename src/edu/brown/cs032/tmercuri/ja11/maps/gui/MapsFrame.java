@@ -5,7 +5,7 @@
 
 package edu.brown.cs032.tmercuri.ja11.maps.gui;
 
-import edu.brown.cs032.tmercuri.ja11.maps.backend.Map;
+import edu.brown.cs032.tmercuri.ja11.maps.backend.MapData;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
@@ -14,10 +14,15 @@ import java.awt.GridLayout;
 import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.Executor;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -33,11 +38,14 @@ public class MapsFrame extends JFrame {
     
     static final long serialVersionUID = 69L;
     
-    private Map map;
+    private MapData map;
+    private final Map<String, MapWay> mapWays;
+    private final Executor pool = new ThreadPoolExecutor(4, 8, 5000, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>());
     
-    public MapsFrame(Map map) {
+    public MapsFrame(MapData map) {
         super("Maps");
         this.map = map;
+        this.mapWays = new HashMap<>();
         createAndShowGUI();
     }
     
@@ -49,29 +57,22 @@ public class MapsFrame extends JFrame {
         JPanel inputFields = new JPanel(new GridLayout(1, 4, 3, 3));
         
         final AutoCorrectedField one, two, three, four;
-        one = new AutoCorrectedField(map);
-        two = new AutoCorrectedField(map);
-        three = new AutoCorrectedField(map);
-        four = new AutoCorrectedField(map);
+        one = new AutoCorrectedField(map, "Street 1");
+        two = new AutoCorrectedField(map, "Cross-Street 1");
+        three = new AutoCorrectedField(map, "Street 2");
+        four = new AutoCorrectedField(map, "Cross-Street 2");
         
         ActionListener mapsListener = new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (!one.getText().equals("") && !two.getText().equals("") && !three.getText().equals("") && !four.getText().equals("")) {
-                    System.out.println("*****THIS NEEDS TO BE THREADED STILL*****");
-                    List<List<String>> path;
-                    try {
-                        path = map.getPath(one.getText(), two.getText(), three.getText(), four.getText());
-                    } catch (IOException ex) {
-                        System.err.println("ERROR: " + ex.getMessage());
-                    }
-                    //TODO: DO SOMETHING WITH THAT PATH
-                    //      ALSO THREAD THIS SHIT UP YO
+                    pool.execute(new PathFinder(map, one.getText(), two.getText(), three.getText(), four.getText(), null));
                 }
             }
         };
         
         JButton goButton = new JButton("Go");
+        goButton.setToolTipText("Calculate Route");
         
         one.addActionListener(mapsListener);
         two.addActionListener(mapsListener);
@@ -101,13 +102,26 @@ public class MapsFrame extends JFrame {
         inputArea.setOpaque(false);
         inputArea.setBorder(BorderFactory.createEmptyBorder(3, 3, 3, 3));
         
-        mainPanel.add(inputArea, BorderLayout.NORTH);
+        JPanel right = new JPanel(new BorderLayout());
+        JPanel zoomPanel = new JPanel(new GridLayout(3, 1, 3, 3));
+        JButton zoomIn = new JButton("+");
+        zoomIn.setToolTipText("Zoom In");
+        JButton zoomDefault = new JButton("o");
+        zoomDefault.setToolTipText("Default Zoom");
+        JButton zoomOut = new JButton("-");
+        zoomOut.setToolTipText("Zoom Out");
+        zoomPanel.setOpaque(false);
         
-        /*
-         * HERE IS WHERE THE MAPS PANEL IS ADDED
-         * ...
-         * ...
-        */
+        zoomPanel.add(zoomIn);
+        zoomPanel.add(zoomDefault);
+        zoomPanel.add(zoomOut);
+        right.setOpaque(false);
+        
+        right.add(zoomPanel, BorderLayout.SOUTH);
+        right.setBorder(BorderFactory.createEmptyBorder(0, 0, 3, 3));
+        
+        mainPanel.add(inputArea, BorderLayout.NORTH);
+        mainPanel.add(right, BorderLayout.EAST);
         
         add(mainPanel);
         pack();
@@ -130,7 +144,7 @@ public class MapsFrame extends JFrame {
         setVisible(true);
     }
     
-    public void setMap(Map newMap) {
+    public void setMap(MapData newMap) {
         this.map = newMap;
     }
 }

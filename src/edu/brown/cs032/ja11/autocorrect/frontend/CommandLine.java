@@ -36,7 +36,7 @@ public class CommandLine implements PresentingResults {
 		String line = input.readLine();
 		//Escape characters
 		while (!((line.equals("\n") || (line.equals(""))))){
-			List<Entry> results;
+			List<String> results;
 			// Doesn't search if there's trailing whitespace
 			if (line.charAt(line.length()-1) != ' '){
 				//Filters and splits the line
@@ -52,8 +52,8 @@ public class CommandLine implements PresentingResults {
 					prec = prec + filteredLine[i]+" ";
 				}
 				//Outputs the results
-				for (Entry i : results){
-					System.out.println(prec+ i.getString());
+				for (String i : results){
+					System.out.println(prec+ i);
 			}
 			System.out.print("\n");
 			line = input.readLine();

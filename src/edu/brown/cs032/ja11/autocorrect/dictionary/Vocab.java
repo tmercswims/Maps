@@ -5,6 +5,7 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 
 /** Vocab maintains both the trie and the hashtable dictionary to look up valid words, and significant data about those words **/
 public class Vocab {
@@ -51,45 +52,24 @@ public class Vocab {
 	 * @throws FileNotFoundException if the filename is invalid
 	 * @throws IOException if the filereading encounters an IO error
 	 */
-	public void addVocab(String filename) throws FileNotFoundException, IOException{
-        try (BufferedReader input = new BufferedReader(new FileReader(filename))) {
-            String line = input.readLine();
-            String[] words;
-            
-            while (line != null){
-                if (line.length()!=0){
-                    //Punctuation removed, everything to lowercase
-                    words = line.replaceAll("\\W", " ").replaceAll("[^a-zA-Z ]", "").toLowerCase().split("\\s+");
+	public void addVocab(List<String> inputWords) throws FileNotFoundException, IOException{
+		
+		int total = inputWords.size();
                     
-                    //Update variables keeping track of corpus information
-                    total+= words.length;
-                    
-                    //Add the words to the dictionary and the root
-                    for (int i= 0; i <words.length; i++ ){
-                        String newWord = words[i];
-                        //Either update an existing Entry
-                        if (dictionary.containsKey(newWord))
-                            dictionary.get(newWord).addUnigramCount();
-                        //Or add a new Entry alltogether
-                        else {
-                            Entry newEntry = new WordEntry(newWord);
-                            root.addWord(newEntry.getString());
-                            dictionary.put(newWord, newEntry);
-                        }
-                        
-                        //Adding bigram Probabilities
-                        if (i != 0){
-                            dictionary.get(newWord).addBigramCount(words[i-1]);
-                        }
-                    }
-                }
-                line = input.readLine();
-            }
-            //Once the entire dictionary has been consumed, relate the total value to all the Entries
+        //Add the words to the dictionary and the root
+		for (String newWord : inputWords)
+          if (dictionary.containsKey(newWord))
+          dictionary.get(newWord).addUnigramCount();
+          //Or add a new Entry alltogether
+          else {
+             Entry newEntry = new WordEntry(newWord);
+             root.addWord(newEntry.getString());
+             dictionary.put(newWord, newEntry);
+          }
+    //Once the entire dictionary has been consumed, relate the total value to all the Entries
             for (Entry i: dictionary.values()){
                 i.setTotal(total);
             }
         }
-		}				
-	}
+	}			
 

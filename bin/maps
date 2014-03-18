@@ -1,3 +1,0 @@
-#! /bin/sh
-
-java -cp lib/*.jar:derived/maps.jar edu.brown.cs032.tmercuri.ja11.maps.backend.Maps "$@"

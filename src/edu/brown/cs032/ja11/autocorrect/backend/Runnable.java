@@ -18,7 +18,7 @@ public interface Runnable {
 	 * @param word: the String to be searched
 	 * @return a List<Entry> of at most five Entries corresponding to possible corrections of the word
 	 */
-	public List<Entry> getTopFiveResults(String word);
+	public List<String> getTopFiveResults(String word);
 	
 	/** getTopFiveResults: given a word and the word immediately preceding, will try to find the top 5 corrections for it
 	 * 
@@ -26,5 +26,5 @@ public interface Runnable {
 	 * @param word: the String to be searched
 	 * @return a List<Entry> of at most five Entries corresponding to possible corrections of hte word
 	 */
-	public List<Entry> getTopFiveResults(String prevWord, String word);
+	public List<String> getTopFiveResults(String prevWord, String word);
 }

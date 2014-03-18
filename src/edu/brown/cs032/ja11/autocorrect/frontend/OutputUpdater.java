@@ -27,7 +27,7 @@ public class OutputUpdater implements DocumentListener {
 	public void updateOutput(){
 		output.setText("");
 		String line = input.getText();
-		Collection<Entry> results;
+		Collection<String> results;
 		if (line!=null&& !line.equals("")){
 		if (line.charAt(line.length()-1) != ' '){
 			//Filters and splits the line
@@ -42,8 +42,8 @@ public class OutputUpdater implements DocumentListener {
 			for (int i = 0; i<filteredLine.length-1; i++){
 				 prec = prec +" "+ filteredLine[i];
 			}
-			for (Entry j : results){
-				output.setText(output.getText()+prec+" "+j.getString()+"\n");
+			for (String j : results){
+				output.setText(output.getText()+prec+" "+j+"\n");
 			}
 		}
 		}

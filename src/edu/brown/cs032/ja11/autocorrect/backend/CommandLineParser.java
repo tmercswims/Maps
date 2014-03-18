@@ -161,11 +161,6 @@ public class CommandLineParser {
 		//Sets up and adds the files to the vocabulary
 		Vocab vocabulary = new Vocab();
 		if (filenames.isEmpty()) throw new FileNotFoundException("ERROR: No files!");
-		else{
-			for (String filename: filenames){
-			vocabulary.addVocab(filename);
-			}
-		}
 		
 		//Sets up the searchers and collects them into one general searcher
 		Collection<Searcher> allSearchers = new ArrayList<>();

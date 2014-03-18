@@ -5,6 +5,7 @@
 
 package edu.brown.cs032.tmercuri.ja11.maps.gui;
 
+import edu.brown.cs032.ja11.autocorrect.frontend.Autocorrecter;
 import edu.brown.cs032.tmercuri.ja11.maps.backend.Map;
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -30,12 +31,14 @@ public class AutoCorrectedField extends JPanel {
     private final JTextField field;
     private final JList<String> list;
     private final Map map;
+    private final Autocorrecter autocorrecter;
     
     public AutoCorrectedField(Map map) {
         super(new BorderLayout());
         this.field = new JTextField();
         this.list = new JList<>();
         this.map = map;
+        this.autocorrecter = new Autocorrecter();
         buildPanel();
     }
 
@@ -44,7 +47,7 @@ public class AutoCorrectedField extends JPanel {
             @Override
             public void insertUpdate(DocumentEvent e) {
                 // generate suggestions for the text in the field
-                List<String> results = new ArrayList<>(); // <- THIS LIST SHOULD CONTAIN THE AUTOCORRECTED THINGS, ie map.getSuggestions()
+                List<String> results = autocorrecter.getResults(field.getText());
                 // put them in an array
                 String[] resultsArr = new String[results.size()];
                 // set that array as the list data
@@ -54,7 +57,7 @@ public class AutoCorrectedField extends JPanel {
             }
             @Override
             public void removeUpdate(DocumentEvent e) {
-                List<String> results = new ArrayList<>();  // <- THIS LIST SHOULD CONTAIN THE AUTOCORRECTED THINGS, ie map.getSuggestions()
+                List<String> results = autocorrecter.getResults(field.getText());  
                 String[] resultsArr = new String[results.size()];
                 list.setListData(results.toArray(resultsArr));
                 list.setVisible(results.size() > 0);

@@ -29,15 +29,23 @@ public class Engine implements Runnable {
 		this.searcher = searcher;
 		this.ranker = ranker;
 	}
+	
+	private List<String> convertEntryListToStringList(List<Entry> input){
+		List<String> result = new ArrayList<String>();
+		for (Entry i: input){
+			result.add(i.getString());
+		}
+		return result;
+	}
 
 	/**getTopFiveResults outputs an ordered list of the best corrects for word given it follows prevWord
 	 * @param prevWord: the String word preceding the word we're searching for
 	 * @param word: the word we're seeking to autocorrect
 	 * 
-	 * @return a List<Entry> of the words that are most likely to be good corrections for word
+	 * @return a List<String> of the words that are most likely to be good corrections for word
 	 */
 	@Override
-	public List<Entry> getTopFiveResults(String prevWord, String word) {
+	public List<String> getTopFiveResults(String prevWord, String word) {
 		
 		//Chooses the Ranking Method based on the ranker enum
 		Comparator<Entry> rankingMethod;
@@ -55,8 +63,8 @@ public class Engine implements Runnable {
 		Collections.sort(toRank, Collections.reverseOrder(rankingMethod));
 		
 		//Returns at most five results
-		if (toRank.size() < 5) return toRank;
-		else return toRank.subList(0, 5);
+		if (toRank.size() < 5) return convertEntryListToStringList(toRank);
+		else return convertEntryListToStringList(toRank.subList(0, 5));
 	}
 	
 	/**getTopFiveResults outputs an ordered list of the best corrects for word without context
@@ -65,7 +73,7 @@ public class Engine implements Runnable {
 	 * @return a List<Entry> of the words that are most likely to be good corrections for word
 	 */
 	@Override
-	public List<Entry> getTopFiveResults(String word) {
+	public List<String> getTopFiveResults(String word) {
 		//Chooses the Ranking Method based on the ranker enum
 		Comparator<Entry> rankingMethod;
 		switch(ranker){
@@ -80,14 +88,9 @@ public class Engine implements Runnable {
 		ArrayList<Entry> toRank = new ArrayList<>();
 		toRank.addAll(searcher.find(word));
 		Collections.sort(toRank, Collections.reverseOrder(rankingMethod));
-		if (word.equals("bo")){
-			for (Entry i : toRank){
-				System.out.println(i.getString()+i.getBigramProb("the"));
-			}
-		}
 		//Returns at most five results
-		if (toRank.size() < 5) return toRank;
-		else return toRank.subList(0, 5);
+		if (toRank.size() < 5) return convertEntryListToStringList(toRank);
+		else return convertEntryListToStringList(toRank.subList(0, 5));
 	}
 
 }

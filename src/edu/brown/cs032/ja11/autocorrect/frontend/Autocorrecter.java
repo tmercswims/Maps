@@ -19,11 +19,12 @@ import edu.brown.cs032.tmercuri.TSV.TSVReader;
 public class Autocorrecter {
 	
 	Engine engine;
-	String filepath = "course/cs032/maps/index.tsv";
+	String filepath;
 	
 	
-	public Autocorrecter(){
+	public Autocorrecter(String filepath){
 		Vocab vocab = new Vocab();
+		this.filepath = filepath;
 		try{
 		TSVReader vocabGenerator = new TSVReader(filepath);
 		List<String> inputWords = vocabGenerator.getAllEntriesInColumn("name");

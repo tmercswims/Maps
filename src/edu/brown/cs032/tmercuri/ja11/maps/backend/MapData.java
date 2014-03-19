@@ -5,6 +5,7 @@
 
 package edu.brown.cs032.tmercuri.ja11.maps.backend;
 
+import edu.brown.cs032.ja11.autocorrect.frontend.Autocorrecter;
 import edu.brown.cs032.tmercuri.TSV.TSVBinarySearch;
 import edu.brown.cs032.tmercuri.TSV.TSVReader;
 import edu.brown.cs032.tmercuri.graph.Graph;
@@ -25,10 +26,12 @@ public class MapData {
     
     private final KDTree<Dimension<String>, String> tree;
     private final Graph<String> graph;
+    private final Autocorrecter autocorrecter;
     
     public MapData(String waysFilename, String nodesFilename, String indexFilename) throws IOException {
         this.tree = new SlowTree<>(getPointsForTree(nodesFilename));
         this.graph = new Graph<>(getGraphableForGraph(waysFilename, nodesFilename, indexFilename));
+        this.autocorrecter = new Autocorrecter(indexFilename);
     }
     
     public List<List<String>> getPath(String st1, String cst1, String st2, String cst2) throws IOException {
@@ -80,6 +83,7 @@ public class MapData {
         return tree.findNearestNeighbor(ref);
     }
     
+    
     private List<Dimension<String>> getPointsForTree(String nodesFilename) throws IOException {
         List<Dimension<String>> list = new ArrayList<>();
         
@@ -103,6 +107,10 @@ public class MapData {
     
     private Graphable<String> getGraphableForGraph(String waysFilename, String nodesFilename, String indexFilename) throws IOException {
         return new MapsGraphable(new TSVBinarySearch(waysFilename), new TSVBinarySearch(nodesFilename), new TSVBinarySearch(indexFilename));
+    }
+    
+    public List<String> getSuggestions(String input){
+    	return autocorrecter.getResults(input);
     }
     
 }

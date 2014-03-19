@@ -31,7 +31,6 @@ public class AutoCorrectedField extends JPanel {
     
     private final JTextField field;
     private final JList<String> list;
-    private final Autocorrecter autocorrecter;
     private final MapData map;
     
     public AutoCorrectedField(MapData map, String fieldToolTip) {
@@ -40,7 +39,6 @@ public class AutoCorrectedField extends JPanel {
         field.setToolTipText(fieldToolTip);
         this.list = new JList<>();
         this.map = map;
-        this.autocorrecter = new Autocorrecter();
         buildPanel();
     }
 
@@ -49,7 +47,7 @@ public class AutoCorrectedField extends JPanel {
             @Override
             public void insertUpdate(DocumentEvent e) {
                 // generate suggestions for the text in the field
-                List<String> results = autocorrecter.getResults(field.getText());
+                List<String> results = map.getSuggestions(field.getText());
                 // put them in an array
                 String[] resultsArr = new String[results.size()];
                 // set that array as the list data
@@ -59,14 +57,14 @@ public class AutoCorrectedField extends JPanel {
             }
             @Override
             public void removeUpdate(DocumentEvent e) {
-                List<String> results = autocorrecter.getResults(field.getText());  
+                List<String> results = map.getSuggestions(field.getText());  
                 String[] resultsArr = new String[results.size()];
                 list.setListData(results.toArray(resultsArr));
                 list.setVisible(results.size() > 0);
             }
             @Override
             public void changedUpdate(DocumentEvent e) {
-                List<String> results = new ArrayList<>();  // <- THIS LIST SHOULD CONTAIN THE AUTOCORRECTED THINGS, ie map.getSuggestions()
+                List<String> results = map.getSuggestions(field.getText());
                 String[] resultsArr = new String[results.size()];
                 list.setListData(results.toArray(resultsArr));
                 list.setVisible(results.size() > 0);

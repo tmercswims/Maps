@@ -6,6 +6,7 @@
 package edu.brown.cs032.tmercuri.ja11.maps.gui;
 
 import java.awt.Color;
+import java.awt.Graphics;
 import java.awt.LayoutManager;
 import javax.swing.JPanel;
 
@@ -20,6 +21,12 @@ public class MapPanel extends JPanel {
     public MapPanel(LayoutManager manager) {
         super(manager);
         setBackground(Color.yellow);
+    }
+    
+    public void paint(){
+    	Graphics graphics = this.getGraphics();
+    	graphics.setColor(Color.BLACK);
+    	graphics.drawLine(300, 200, 100, 500);
     }
     
     // DO THINGS TO MAKE THIS A MAP

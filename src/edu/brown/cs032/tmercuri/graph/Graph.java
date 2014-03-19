@@ -63,6 +63,10 @@ public class Graph<T> {
         return g.getStreetName(ID);
     }
     
+    public List<List<String>> getBetweenLats(Double topLat, Double botLat) throws IOException {
+        return g.getBetweenLats(topLat, botLat);
+    }
+    
     public String findIntersection(T street, T crossStreet) throws IOException {
         List<String> nodesOnStreet = g.getNodesOnStreet(street);
         List<String> nodesOnCrossStreet = g.getNodesOnStreet(crossStreet);

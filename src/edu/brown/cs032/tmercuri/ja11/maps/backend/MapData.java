@@ -50,20 +50,22 @@ public class MapData {
         return graph.returnShortestPathToFromA(inter2, inter1);
     }
     
-    public List<MapWay> getAllWithinRadius(int r, String refID) throws IOException {
-        List<String> nodeIDs = tree.findAllWithinRadius(r, true, new LatLng("", graph.getLat(refID), graph.getLng(refID)));
-        List<MapWay> ways = new ArrayList<>();
+    public List<MapWay> getAllBetweenLats(Double topLat, Double botLat) throws IOException {
+        List<MapWay> mapWays = new ArrayList<>();
         
-        for (String node : nodeIDs) {
-            List<String> waysOnNode = graph.getWaysThatCrossNode(node);
-            for (String way : waysOnNode) {
-                String start = graph.getStartOfWay(way);
-                String end = graph.getEndOfWay(way);
-                ways.add(new MapWay(way, start, graph.getLat(start), graph.getLng(start), end, graph.getLat(end), graph.getLng(end), graph.getWayName(way)));
-            }
+        List<List<String>> wayFileLines = graph.getBetweenLats(topLat, botLat);
+        int idIndex = wayFileLines.get(0).indexOf("id");
+        int startIndex = wayFileLines.get(0).indexOf("start");
+        int endIndex = wayFileLines.get(0).indexOf("end");
+        int nameIndex = wayFileLines.get(0).indexOf("name");
+        
+        wayFileLines.remove(0);
+        
+        for (List<String> fileLine : wayFileLines) {
+            mapWays.add(new MapWay(fileLine.get(idIndex), fileLine.get(startIndex), graph.getLat(fileLine.get(startIndex)), graph.getLng(fileLine.get(startIndex)), fileLine.get(endIndex), graph.getLat(fileLine.get(endIndex)), graph.getLng(fileLine.get(endIndex)), fileLine.get(nameIndex)));
         }
         
-        return ways;
+        return mapWays;
     }
     
     public List<MapWay> wayIDsToMapWays(List<String> IDList) throws IOException {

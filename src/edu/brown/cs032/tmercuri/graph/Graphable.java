@@ -43,6 +43,8 @@ public interface Graphable<T> {
     
     public double getLng(T ID) throws IOException;
     
+    public List<List<String>> getBetweenLats(Double topLat, Double botLat) throws IOException;
+    
     /**
      * Gives all neighbors of the given name
      * @param ID the ID to find neighbors of

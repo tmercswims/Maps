@@ -5,14 +5,11 @@
 
 package edu.brown.cs032.tmercuri.ja11.maps.gui;
 
-import edu.brown.cs032.ja11.autocorrect.frontend.Autocorrecter;
-import edu.brown.cs032.tmercuri.ja11.maps.backend.Map;
 import edu.brown.cs032.tmercuri.ja11.maps.backend.MapData;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.event.ActionListener;
-import java.util.ArrayList;
 import java.util.List;
 import javax.swing.BorderFactory;
 import javax.swing.JList;

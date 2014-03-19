@@ -61,6 +61,11 @@ public class MapsGraphable implements Graphable<String> {
     public double getLng(String ID) throws IOException {
         return Double.parseDouble(nodes.lookup(ID, "id", "longitude"));
     }
+    
+    @Override
+    public List<List<String>> getBetweenLats(Double topLat, Double botLat) throws IOException {
+        return ways.getAllBetween("/w/"+topLat.toString().substring(0, 4), "/w/"+botLat.toString().substring(0, 4), "id");
+    }
 
     @Override
     public String getStreetName(String ID) throws IOException {

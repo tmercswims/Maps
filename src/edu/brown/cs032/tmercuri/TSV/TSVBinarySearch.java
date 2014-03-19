@@ -10,7 +10,10 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.charset.Charset;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 
@@ -21,6 +24,7 @@ import java.util.Scanner;
 public class TSVBinarySearch {
     private final RandomAccessFile raf;
     private final Map<String, Integer> columns;
+    private List<String> firstLine;
     private static final Charset UTF8 = Charset.forName("UTF-8");
     private static final int BUFFER = 4096;
     
@@ -40,15 +44,19 @@ public class TSVBinarySearch {
     }
     
     private void getHeaders(String filename) throws FileNotFoundException, IOException {
-        String[] headers;
+        String fL;
         // scan in the first line of the file
         try (Scanner s = new Scanner(new File(filename), "UTF-8")) {
-            headers = s.hasNextLine() ? s.nextLine().split("\t") : null;
+            fL = s.hasNextLine() ? s.nextLine() : null;
         }
         // empty file
-        if (headers == null) {
+        if (fL == null) {
             throw new IOException("bad file");
         }
+        
+        
+        String[] headers = fL.split("\t");
+        this.firstLine = Arrays.asList(headers);
         
         // map each header string to its column number
         for (int i=0; i<headers.length; i++) {
@@ -104,7 +112,6 @@ public class TSVBinarySearch {
             if (cmp == 0) {
                 // get back to the beginning of the line
                 seekToPrevNewLine();
-                long pointer = raf.getFilePointer();
                 // for duplicate keys
                 seekToPrevNewLine();
                 for (String before = checkLine(query, giveColumn); before.equals(query); before = checkLine(query, giveColumn)) {
@@ -129,6 +136,83 @@ public class TSVBinarySearch {
         }
         // search falls through if bounds are reduced to nothing, which means the query was not in the file
         return null;
+    }
+    
+    public List<List<String>> getAllBetween(String topBound, String botBound, String keyField) throws IOException {
+        Integer keyColumn = columns.get(keyField);
+        List<List<String>> linesToReturn = new ArrayList<>();
+        linesToReturn.add(firstLine);
+        
+        // seek to start
+        raf.seek(0);
+        
+        // start with the whole file as bounds
+        long top = 0;
+        long bot = raf.length();
+        // as long as we have an area to search in
+        while (top <= bot) {
+            // better than (top+bot)/2, to prevent overflow
+            long mid = (top+bot)>>>1;
+            // go to the middle
+            raf.seek(mid);
+            
+            // try to go the beginning of the next line
+            seekToNextNewLine();
+            // if that is the end of the file...
+            if (raf.getFilePointer() == raf.length()) {
+                // ...go back to beginning of the last line
+                seekToPrevNewLine();
+                seekToPrevNewLine();
+            }
+            
+            // see if this line contains query in giveColumn
+            String res = checkLine(topBound, keyColumn);
+            int cmp = res.compareTo(topBound);
+            // it does
+            if (cmp == 0) {
+                // get back to the beginning of the line
+                seekToPrevNewLine();
+                // for duplicate keys
+                seekToPrevNewLine();
+                for (String before = checkLine(topBound, keyColumn); before.equals(topBound); before = checkLine(topBound, keyColumn)) {
+                    seekToPrevNewLine();
+                    seekToPrevNewLine();
+                }
+                seekToNextNewLine();
+                while (botBound.compareTo(checkLine(botBound, keyColumn)) >= 0) {
+                    seekToPrevNewLine();
+                    linesToReturn.add(Arrays.asList(readToNextNewLine().trim().split("\t")));
+                }
+                return linesToReturn;
+            } // we are too high; new top is the mid
+            else if (cmp < 0) {
+                top = mid+1;
+            } // we are too low; new bot is the mid
+            else if (cmp > 0) {
+                bot = mid-1;
+            }
+        }
+        // search falls through if bounds are reduced to nothing, which means the query was not in the file
+        return null;
+    }
+    
+    private String readToNextNewLine() throws IOException {
+        byte[] line = new byte[2*BUFFER];
+        
+        int i = 0;
+        for (int r=raf.read(); r!='\n'; r=raf.read()) {
+            // found EOF
+            if (r == -1) {
+                // seek to end of file
+                raf.seek(raf.length());
+                break;
+            }
+            line[i] = (byte) r;
+            i++;
+        }
+        
+        return new String(line, UTF8);
+        
     }
     
     private void seekToNextNewLine() throws IOException {

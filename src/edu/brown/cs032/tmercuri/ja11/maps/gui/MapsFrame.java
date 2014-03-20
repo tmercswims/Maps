@@ -20,9 +20,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Executor;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.Executors;
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -40,7 +38,7 @@ public class MapsFrame extends JFrame {
     
     private MapData map;
     private final Map<String, MapWay> mapWays;
-    private final Executor pool = new ThreadPoolExecutor(4, 8, 5000, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>());
+    private final Executor pool = Executors.newFixedThreadPool(8);
     private AutoCorrectedField one, two, three, four;
     MapPanel mainPanel;
     

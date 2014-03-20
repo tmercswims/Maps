@@ -203,7 +203,7 @@ public class MapPanel extends JPanel {
 		@Override
 		public void mouseWheelMoved(MouseWheelEvent e) {
 			if(e.getScrollType() == MouseWheelEvent.WHEEL_UNIT_SCROLL){
-				scale += (0.1* e.getWheelRotation());
+				scale -= (0.1* e.getWheelRotation());
 				scale = Math.max(0.00001, scale);
 				repaint();
 			}

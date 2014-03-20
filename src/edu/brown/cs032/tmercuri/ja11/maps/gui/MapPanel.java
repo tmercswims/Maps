@@ -13,8 +13,13 @@ import java.awt.event.MouseWheelListener;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.NoninvertibleTransformException;
 import java.awt.geom.Point2D;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
 
 import javax.swing.JPanel;
+
+import edu.brown.cs032.tmercuri.ja11.maps.backend.MapData;
 
 
 
@@ -33,6 +38,9 @@ public class MapPanel extends JPanel {
 	private Point2D PointOne;
 	private Point2D PointTwo;
 	private PointStatus whichPoint;
+	private MapData mapData;
+	private LatLngToPixel converter;
+	private Collection<MapWay> toDisplay;
 	
 	private enum PointStatus{
 		P1, P2;
@@ -49,6 +57,7 @@ public class MapPanel extends JPanel {
 		PointTwo = null;
 		whichPoint = PointStatus.P1;
 		setDoubleBuffered(true);
+		toDisplay = new ArrayList<MapWay>();
 		
 		Scroller scroller = new Scroller();
 		addMouseListener(scroller);
@@ -56,15 +65,31 @@ public class MapPanel extends JPanel {
 		addMouseWheelListener(new Scaler());	
 	}
 	
+	public void setMap (MapData mapData){
+		this.mapData = mapData;
+		try{
+		int initialX = (int)(mapData.getTopLeftOfMap().getLng()+((mapData.getBotRightOfMap().getLng() -mapData.getTopLeftOfMap().getLng())/2));
+		int initialY = (int) (mapData.getBotRightOfMap().getLat() + ((mapData.getTopLeftOfMap().getLat()- mapData.getBotRightOfMap().getLng())/2));
+		toDisplay.addAll(mapData.getAllBetween(converter.pixelToLat(initialY + getHeight()), 
+						converter.pixelToLng(initialX - getWidth()), converter.pixelToLat(initialY + getHeight()), converter.pixelToLng(initialX + getWidth())));
+		}
+		catch (IOException e){
+			System.out.println("ERROR: problem with IO");
+		}
+		}
+	
 	@Override
 	public void paint(Graphics g){
+		super.paint(g);
 		AffineTransform transformer = new AffineTransform();
 		transformer.translate(xOffset, yOffset);
 		transformer.scale(scale, scale);
 		Graphics2D g2d = (Graphics2D) g;
 		g2d.setTransform(transformer);
-		g2d.setColor(Color.PINK);
-		g2d.fillRect(100, 300, 50, 200);
+		g2d.setColor(Color.BLACK);
+		for (MapWay way : toDisplay){
+			drawMapWay(g2d, way);
+		}
 		g2d.setColor(Color.RED);
 		if (PointOne!= null){
 			g2d.drawOval((int)PointOne.getX(), (int)PointOne.getY(), 5, 5);
@@ -86,6 +111,19 @@ public class MapPanel extends JPanel {
 	}
 	
 	
+	private void centerOnPoint(int x, int y){
+		int xSize = getWidth();
+		int ySize = getHeight();
+		xOffset = (xSize /2) + x;
+		yOffset = (ySize / 2) + y;
+		scale = 1;
+		repaint();
+	}
+	
+	private void drawMapWay(Graphics2D graphics, MapWay way){
+		way.convert(converter);
+		graphics.drawLine(way.getStartPixelX(), way.getStartPixelY(), way.getEndPixelX(), way.getEndPixelY());
+	}
 	
 	private class Scroller implements MouseListener, MouseMotionListener{
 		private int initialX;
@@ -118,7 +156,7 @@ public class MapPanel extends JPanel {
 					
 						case P2: {
 								PointTwo = actualPos;
-								whichPoint = PointStatus.P2; 
+								whichPoint = PointStatus.P1; 
 								break;
 							}
 						}
@@ -172,6 +210,24 @@ public class MapPanel extends JPanel {
 		}
 		
 	}
+	
+	public double getLatPointOne(){
+		 return  (converter.pixelToLat((int) PointOne.getY()));
+	}
+	
+	public double getLngPointOne(){
+		return  (converter.pixelToLng((int) PointOne.getY()));
+	}
+	
+	public double getLatPointTwo(){
+		 return  (converter.pixelToLat((int) PointTwo.getY()));
+	}
+	
+	public double getLngPointTwo(){
+		return  (converter.pixelToLng((int) PointTwo.getY()));
+	}
+	
+	
 
 
 

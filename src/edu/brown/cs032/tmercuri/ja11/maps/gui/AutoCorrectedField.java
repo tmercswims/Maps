@@ -34,6 +34,7 @@ public class AutoCorrectedField extends JPanel {
         super(new BorderLayout());
         this.field = new JTextField();
         field.setToolTipText(fieldToolTip);
+        field.setEditable(true);
         this.list = new JList<>();
         this.map = map;
         buildPanel();

@@ -42,17 +42,18 @@ public class MapsFrame extends JFrame {
     private final Map<String, MapWay> mapWays;
     private final Executor pool = new ThreadPoolExecutor(4, 8, 5000, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>());
     private AutoCorrectedField one, two, three, four;
+    MapPanel mainPanel;
     
     public MapsFrame(MapData map) {
         super("Maps");
         this.map = map;
         this.mapWays = new HashMap<>();
+        mainPanel = new MapPanel(new BorderLayout());
         createAndShowGUI();
     }
     
     private void createAndShowGUI() {
-        JPanel mainPanel = new MapPanel(new BorderLayout());
-        
+        JPanel master = new JPanel(new BorderLayout());
         JPanel inputArea = new JPanel(new GridBagLayout());
         GridBagConstraints c = new GridBagConstraints();
         JPanel inputFields = new JPanel(new GridLayout(1, 4, 3, 3));
@@ -70,6 +71,7 @@ public class MapsFrame extends JFrame {
                 }
             }
         };
+        
         
         JButton goButton = new JButton("Go");
         goButton.setToolTipText("Calculate Route");
@@ -120,10 +122,20 @@ public class MapsFrame extends JFrame {
         right.add(zoomPanel, BorderLayout.SOUTH);
         right.setBorder(BorderFactory.createEmptyBorder(0, 0, 3, 3));
         
-        mainPanel.add(inputArea, BorderLayout.NORTH);
-        mainPanel.add(right, BorderLayout.EAST);
+        master.add(inputArea, BorderLayout.NORTH);
+        master.add(right, BorderLayout.EAST);
         
-        add(mainPanel);
+        ActionListener startSearch  = new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+            	System.out.println("this will work");
+            // pool.execute(map.getPath(mainPanel.getLatPointOne(), mainPanel.getLngPointOne(), mainPanel.getLatPointTwo(), mainPanel.getLngPointTwo()));
+        }
+        };
+        mainPanel.setVisible(true);
+        master.add(mainPanel, BorderLayout.CENTER);
+        
+        add(master);
         pack();
         setSize(new Dimension(1400, 800));
         setResizable(false);
@@ -154,5 +166,6 @@ public class MapsFrame extends JFrame {
         three.setEnabled(true);
         four.setMap(newMap);
         four.setEnabled(true);
+        mainPanel.setMap(newMap);
     }
 }

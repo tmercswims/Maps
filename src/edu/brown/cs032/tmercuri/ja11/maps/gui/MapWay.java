@@ -22,6 +22,10 @@ public class MapWay {
     private double endLng;
     private final String name;
     private Color color;
+    private int startPixelX;
+    private int startPixelY;
+    private int endPixelX;
+    private int endPixelY;
     
     public MapWay(String wayID, String startNodeID, double startLat, double startLng, String endNodeID, double endLat, double endLng, String name) {
         this.wayID = wayID;
@@ -86,4 +90,28 @@ public class MapWay {
     public Color getColor() {
         return this.color;
     }
+    
+    public int getStartPixelX(){
+    	return startPixelX;
+    }
+    
+    public int getStartPixelY(){
+    	return startPixelY;
+    }
+    
+    public int getEndPixelX(){
+    	return endPixelX;
+    }
+    
+    public int getEndPixelY(){
+    	return endPixelY;
+    }
+    
+    public void convert(LatLngToPixel converter){
+    	startPixelX = converter.LngToPixel(startLng);
+    	startPixelY = converter.LatToPixel(startLat);
+    	endPixelX = converter.LngToPixel(endLng);
+    	endPixelY = converter.LatToPixel(endLat);
+    }
+    
 }

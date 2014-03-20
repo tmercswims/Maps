@@ -50,15 +50,17 @@ public class Maps {
             if (useGUI) {
                 GUI = new MapsFrame(null);
             }
-
+            System.out.println("mapdata loading");
             MapData map = new MapData(waysFilename, nodesFilename, IndexFilename);
+            System.out.println("mapdata loaded");
             if (GUI != null) {
+            	System.out.println("getting new map");
                 GUI.setMap(map);
                 System.out.println("We have a map!");
             } else {
                 commandLineInterface(map);
             }
-        } catch (IOException /*| RuntimeException*/ ex) {
+       } catch (IOException /*| RuntimeException*/ ex) {
             System.err.println("ERROR: " + ex.getMessage());
         }
     }

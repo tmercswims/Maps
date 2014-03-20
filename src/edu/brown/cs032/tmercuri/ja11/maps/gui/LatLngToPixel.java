@@ -1,3 +1,5 @@
+package edu.brown.cs032.tmercuri.ja11.maps.gui;
+
 
 public class LatLngToPixel {
 	
@@ -29,7 +31,7 @@ public class LatLngToPixel {
 		return (lowLat+ distance);
 	}
 	
-	public double pixeltoLng(int pixel){
+	public double pixelToLng(int pixel){
 		double distance = pixel/lngScale;
 		return (lowLng + distance);
 	}

@@ -53,7 +53,7 @@ public class MapData {
     public List<MapWay> getAllBetween(Double topLat, Double topLng, Double botLat, Double botLng) throws IOException {
         List<MapWay> mapWays = new ArrayList<>();
         
-        List<List<String>> wayFileLines = graph.getBetweenLats(topLat, botLat);
+        List<List<String>> wayFileLines = graph.getBetweenLats(botLat, topLat);
         int idIndex = wayFileLines.get(0).indexOf("id");
         int startIndex = wayFileLines.get(0).indexOf("start");
         int endIndex = wayFileLines.get(0).indexOf("end");

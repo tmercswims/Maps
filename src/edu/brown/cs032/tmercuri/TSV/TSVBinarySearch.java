@@ -196,6 +196,66 @@ public class TSVBinarySearch {
         return null;
     }
     
+    public String getColumnOnFirstLine(String column) throws IOException {
+        int columnNum = columns.get(column);
+        raf.seek(0);
+        
+        seekToNextNewLine();
+        
+        for (int t=0; t<columnNum;) {
+            int r = raf.read();
+            if (r == '\t') {
+                t++;
+            }
+        }
+        
+        byte[] line = new byte[BUFFER];
+        
+        int i = 0;
+        for (int r=raf.read(); r!='\t'&&r!='\n'; r=raf.read()) {
+            // found EOF
+            if (r == -1) {
+                // seek to end of file
+                raf.seek(raf.length());
+                break;
+            }
+            line[i] = (byte) r;
+            i++;
+        }
+        
+        return new String(line, UTF8).trim();
+    }
+    
+    public String getColumnOnLastLine(String column) throws IOException {
+        int columnNum = columns.get(column);
+        raf.seek(raf.length());
+        
+        seekToPrevNewLine();
+        
+        for (int t=0; t<columnNum;) {
+            int r = raf.read();
+            if (r == '\t') {
+                t++;
+            }
+        }
+        
+        byte[] line = new byte[BUFFER];
+        
+        int i = 0;
+        for (int r=raf.read(); r!='\t'&&r!='\n'; r=raf.read()) {
+            // found EOF
+            if (r == -1) {
+                // seek to end of file
+                raf.seek(raf.length());
+                break;
+            }
+            line[i] = (byte) r;
+            i++;
+        }
+        
+        return new String(line, UTF8).trim();
+    }
+    
     private String readToNextNewLine() throws IOException {
         byte[] line = new byte[2*BUFFER];
         

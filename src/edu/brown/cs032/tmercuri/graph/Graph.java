@@ -5,6 +5,7 @@
 
 package edu.brown.cs032.tmercuri.graph;
 
+import edu.brown.cs032.tmercuri.ja11.maps.backend.LatLng;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -65,6 +66,14 @@ public class Graph<T> {
     
     public List<List<String>> getBetweenLats(Double topLat, Double botLat) throws IOException {
         return g.getBetweenLats(topLat, botLat);
+    }
+    
+    public LatLng getTopLeft() throws IOException {
+        return g.getTopLeftPoint();
+    }
+    
+    public LatLng getBotRight() throws IOException {
+        return g.getBotRightPoint();
     }
     
     public String findIntersection(T street, T crossStreet) throws IOException {

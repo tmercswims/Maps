@@ -28,7 +28,7 @@ public class AutoCorrectedField extends JPanel {
     
     private final JTextField field;
     private final JList<String> list;
-    private final MapData map;
+    private MapData map;
     
     public AutoCorrectedField(MapData map, String fieldToolTip) {
         super(new BorderLayout());
@@ -44,8 +44,6 @@ public class AutoCorrectedField extends JPanel {
             @Override
             public void insertUpdate(DocumentEvent e) {
                 // generate suggestions for the text in the field
-            	if (map == null) System.out.println("Map is null!");
-            	if (field == null) System.out.println("Field is null");
                 List<String> results = map.getSuggestions(field.getText());
                 // put them in an array
                 String[] resultsArr = new String[results.size()];
@@ -84,6 +82,7 @@ public class AutoCorrectedField extends JPanel {
         list.setVisible(false);
         setOpaque(false);
         setBorder(BorderFactory.createEmptyBorder());
+        this.setEnabled(false);
     }
     
     public void setListVisible(boolean visible) {
@@ -102,5 +101,12 @@ public class AutoCorrectedField extends JPanel {
         field.addActionListener(listener);
     }
     
+    public void setMap(MapData newMap) {
+        this.map = newMap;
+    }
     
+    @Override
+    public void setEnabled(boolean enabled) {
+        field.setEnabled(enabled);
+    }
 }

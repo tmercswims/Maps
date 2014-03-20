@@ -41,6 +41,7 @@ public class MapsFrame extends JFrame {
     private MapData map;
     private final Map<String, MapWay> mapWays;
     private final Executor pool = new ThreadPoolExecutor(4, 8, 5000, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>());
+    private AutoCorrectedField one, two, three, four;
     
     public MapsFrame(MapData map) {
         super("Maps");
@@ -56,7 +57,6 @@ public class MapsFrame extends JFrame {
         GridBagConstraints c = new GridBagConstraints();
         JPanel inputFields = new JPanel(new GridLayout(1, 4, 3, 3));
         
-        final AutoCorrectedField one, two, three, four;
         one = new AutoCorrectedField(map, "Street 1");
         two = new AutoCorrectedField(map, "Cross-Street 1");
         three = new AutoCorrectedField(map, "Street 2");
@@ -146,5 +146,13 @@ public class MapsFrame extends JFrame {
     
     public void setMap(MapData newMap) {
         this.map = newMap;
+        one.setMap(newMap);
+        one.setEnabled(true);
+        two.setMap(newMap);
+        two.setEnabled(true);
+        three.setMap(newMap);
+        three.setEnabled(true);
+        four.setMap(newMap);
+        four.setEnabled(true);
     }
 }

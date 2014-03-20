@@ -50,7 +50,7 @@ public class MapData {
         return graph.returnShortestPathToFromA(inter2, inter1);
     }
     
-    public List<MapWay> getAllBetweenLats(Double topLat, Double botLat) throws IOException {
+    public List<MapWay> getAllBetween(Double topLat, Double topLng, Double botLat, Double botLng) throws IOException {
         List<MapWay> mapWays = new ArrayList<>();
         
         List<List<String>> wayFileLines = graph.getBetweenLats(topLat, botLat);
@@ -61,11 +61,32 @@ public class MapData {
         
         wayFileLines.remove(0);
         
+        String topLngStr = String.valueOf(topLng);
+        String botLngStr = String.valueOf(botLng);
+        
         for (List<String> fileLine : wayFileLines) {
-            mapWays.add(new MapWay(fileLine.get(idIndex), fileLine.get(startIndex), graph.getLat(fileLine.get(startIndex)), graph.getLng(fileLine.get(startIndex)), fileLine.get(endIndex), graph.getLat(fileLine.get(endIndex)), graph.getLng(fileLine.get(endIndex)), fileLine.get(nameIndex)));
+            Double startLng = graph.getLng(fileLine.get(startIndex));
+            Double endLng = graph.getLng(fileLine.get(endIndex));
+            if ((String.valueOf(startLng).substring(0, topLngStr.length()).compareTo(topLngStr) >= 0 || String.valueOf(endLng).substring(0, topLngStr.length()).compareTo(topLngStr) >= 0) && (String.valueOf(startLng).substring(0, botLngStr.length()).compareTo(botLngStr) <= 0 || String.valueOf(endLng).substring(0, botLngStr.length()).compareTo(botLngStr) >= 0)) {
+                mapWays.add(new MapWay(fileLine.get(idIndex), fileLine.get(startIndex), graph.getLat(fileLine.get(startIndex)), startLng, fileLine.get(endIndex), graph.getLat(fileLine.get(endIndex)), endLng, fileLine.get(nameIndex)));
+            }
         }
         
         return mapWays;
+    }
+    
+    public LatLng getNearestPoint(double lat, double lng) throws IOException {
+        LatLng ref = new LatLng("", lat, lng);
+        String nodeID = tree.findNearestNeighbor(ref);
+        return new LatLng(nodeID, graph.getLat(nodeID), graph.getLng(nodeID));
+    }
+    
+    public LatLng getTopLeftOfMap() throws IOException {
+        return graph.getTopLeft();
+    }
+    
+    public LatLng getBotRightOfMap() throws IOException {
+        return graph.getBotRight();
     }
     
     public List<MapWay> wayIDsToMapWays(List<String> IDList) throws IOException {
@@ -80,11 +101,14 @@ public class MapData {
         return ways;
     }
     
+    public List<String> getSuggestions(String input){
+    	return autocorrecter.getResults(input);
+    }
+    
     private String getNearestPointTo(double lat, double lng) {
         LatLng ref = new LatLng("", lat, lng);
         return tree.findNearestNeighbor(ref);
     }
-    
     
     private List<Dimension<String>> getPointsForTree(String nodesFilename) throws IOException {
         List<Dimension<String>> list = new ArrayList<>();
@@ -110,9 +134,4 @@ public class MapData {
     private Graphable<String> getGraphableForGraph(String waysFilename, String nodesFilename, String indexFilename) throws IOException {
         return new MapsGraphable(new TSVBinarySearch(waysFilename), new TSVBinarySearch(nodesFilename), new TSVBinarySearch(indexFilename));
     }
-    
-    public List<String> getSuggestions(String input){
-    	return autocorrecter.getResults(input);
-    }
-    
 }

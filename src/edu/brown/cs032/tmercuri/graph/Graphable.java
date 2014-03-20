@@ -5,6 +5,7 @@
 
 package edu.brown.cs032.tmercuri.graph;
 
+import edu.brown.cs032.tmercuri.ja11.maps.backend.LatLng;
 import java.io.IOException;
 import java.util.List;
 
@@ -44,6 +45,10 @@ public interface Graphable<T> {
     public double getLng(T ID) throws IOException;
     
     public List<List<String>> getBetweenLats(Double topLat, Double botLat) throws IOException;
+    
+    public LatLng getTopLeftPoint() throws IOException;
+    
+    public LatLng getBotRightPoint() throws IOException;
     
     /**
      * Gives all neighbors of the given name

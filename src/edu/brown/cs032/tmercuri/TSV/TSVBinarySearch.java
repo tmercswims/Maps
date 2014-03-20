@@ -138,8 +138,8 @@ public class TSVBinarySearch {
         return null;
     }
     
-    public List<List<String>> getAllBetween(String topBound, String botBound, String keyField) throws IOException {
-        Integer keyColumn = columns.get(keyField);
+    public List<List<String>> getAllBetween(String topBound, String botBound, String latKeyField, String lngKeyField) throws IOException {
+        Integer keyColumn = columns.get(latKeyField);
         List<List<String>> linesToReturn = new ArrayList<>();
         linesToReturn.add(firstLine);
         
@@ -170,12 +170,12 @@ public class TSVBinarySearch {
             int cmp1 = res.compareTo(topBound);
             int cmp2 = res.compareTo(botBound);
             // it does
-            if (cmp1 > 0 && cmp2 < 0) {
+            if (cmp1 == 0) {
                 // get back to the beginning of the line
                 seekToPrevNewLine();
                 // for duplicate keys
                 seekToPrevNewLine();
-                for (String before = checkLine(topBound, keyColumn); (before.compareTo(topBound) > 0 && before.compareTo(botBound) < 0); before = checkLine(topBound, keyColumn)) {
+                for (String before = checkLine(topBound, keyColumn); (before.compareTo(topBound) >= 0 && before.compareTo(botBound) <= 0); before = checkLine(topBound, keyColumn)) {
                     seekToPrevNewLine();
                     seekToPrevNewLine();
                 }

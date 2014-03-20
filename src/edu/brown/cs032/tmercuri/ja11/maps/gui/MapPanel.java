@@ -75,12 +75,12 @@ public class MapPanel extends JPanel {
 		this.mapData = mapData;
 
 		try {
-			LatLng point = mapData.getNearestPoint(41.709574, -71.256164);
+			LatLng point = mapData.getNearestPoint(41.827404, -71.399323);
 			double initialLat = point.getLat();
 			double initialLng = point.getLng();
             converter = new LatLngToPixel(point.getLat(), point.getLng());
-            System.out.println("The span in lat is+"+ converter.pixelToLatDistance(getHeight()));
-            System.out.println("The span in lng is"+ converter.pixelToLngDistance(getWidth()));
+            System.out.println("The span in lat is "+ converter.pixelToLatDistance(getHeight()));
+            System.out.println("The span in lng is "+ converter.pixelToLngDistance(getWidth()));
             toDisplay.addAll(mapData.getAllBetween(initialLat + converter.pixelToLatDistance(getHeight()), 
 						initialLng - converter.pixelToLngDistance(getWidth()), initialLat - converter.pixelToLatDistance(getHeight()), initialLng + converter.pixelToLngDistance(getWidth())));
             System.out.println("found all roads");
@@ -102,7 +102,6 @@ public class MapPanel extends JPanel {
 		g2d.setTransform(transformer);
 		g2d.setColor(Color.BLACK);
 		for (MapWay way : toDisplay){
-			g2d.drawLine(40, 10, 30, 20);
 			drawMapWay(g2d, way);
 		}
 		g2d.setColor(Color.RED);
@@ -227,7 +226,7 @@ public class MapPanel extends JPanel {
 		public void mouseWheelMoved(MouseWheelEvent e) {
 			if(e.getScrollType() == MouseWheelEvent.WHEEL_UNIT_SCROLL){
 				scale -= (0.1* e.getWheelRotation());
-				scale = Math.max(0.00001, scale);
+				scale = Math.max(0.0000001, scale);
 				repaint();
 			}
 		}

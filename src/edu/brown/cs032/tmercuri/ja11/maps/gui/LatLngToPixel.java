@@ -3,8 +3,8 @@ package edu.brown.cs032.tmercuri.ja11.maps.gui;
 
 public class LatLngToPixel {
 	
-	private double latScale = 8000;
-	private double lngScale = 11000;
+	private double latScale = 1100000;
+	private double lngScale = 800000;
 	private double anchorLat;
 	private double anchorLng;
 	private double anchorX;

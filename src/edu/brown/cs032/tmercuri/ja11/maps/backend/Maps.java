@@ -54,6 +54,7 @@ public class Maps {
             MapData map = new MapData(waysFilename, nodesFilename, IndexFilename);
             if (GUI != null) {
                 GUI.setMap(map);
+                System.out.println("We have a map!");
             } else {
                 commandLineInterface(map);
             }

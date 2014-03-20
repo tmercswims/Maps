@@ -16,6 +16,7 @@ import java.awt.geom.Point2D;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 import javax.swing.JPanel;
 
@@ -41,6 +42,8 @@ public class MapPanel extends JPanel {
 	private MapData mapData;
 	private LatLngToPixel converter;
 	private Collection<MapWay> toDisplay;
+	private List<MapWay> pathWay;
+	private boolean hasPath;
 	
 	private enum PointStatus{
 		P1, P2;
@@ -58,6 +61,10 @@ public class MapPanel extends JPanel {
 		whichPoint = PointStatus.P1;
 		setDoubleBuffered(true);
 		toDisplay = new ArrayList<MapWay>();
+		converter = new LatLngToPixel(40.15, -73.8);
+		toDisplay.add(new MapWay("bu", "ca", 40.1581762, -73.7485664, "hey", 40.13111, - 73.7232, "John street" ));
+		pathWay = new ArrayList<MapWay>();
+		hasPath = false;
 		
 		Scroller scroller = new Scroller();
 		addMouseListener(scroller);
@@ -67,6 +74,7 @@ public class MapPanel extends JPanel {
 	
 	public void setMap (MapData mapData){
 		this.mapData = mapData;
+
 		try {
             LatLng initTopLeft = mapData.getTopLeftOfMap();
             LatLng initBotRight = mapData.getBotRightOfMap();
@@ -90,6 +98,7 @@ public class MapPanel extends JPanel {
 		g2d.setTransform(transformer);
 		g2d.setColor(Color.BLACK);
 		for (MapWay way : toDisplay){
+			g2d.drawLine(40, 10, 30, 20);
 			drawMapWay(g2d, way);
 		}
 		g2d.setColor(Color.RED);
@@ -98,6 +107,12 @@ public class MapPanel extends JPanel {
 			if (PointTwo != null){
 				g2d.setColor(Color.DARK_GRAY);
 				g2d.drawOval((int) PointTwo.getX(), (int)PointTwo.getY(), 5, 5);
+			}
+		}
+		if (hasPath){
+			g2d.setColor(Color.MAGENTA);
+			for (MapWay way: pathWay){
+				drawMapWay(g2d, way);
 			}
 		}
 		try {

@@ -81,8 +81,8 @@ public class MapPanel extends JPanel {
             double initialLng = (initTopLeft.getLng()+initBotRight.getLng())/2;
             double initialLat = (initTopLeft.getLat()+initBotRight.getLat())/2;
             converter = new LatLngToPixel(initBotRight.getLat(), initTopLeft.getLng());
-            toDisplay.addAll(mapData.getAllBetween(initialLat + 0.001, 
-						initialLng - 0.001, initialLat - 0.001, initialLng + 0.001));
+            toDisplay.addAll(mapData.getAllBetween(initialLat + 0.1, 
+						initialLng - 0.1, initialLat - 0.1, initialLng + 0.1));
         } catch (IOException e) {
 			System.out.println("ERROR: problem with IO");
         }

@@ -61,13 +61,10 @@ public class MapData {
         
         wayFileLines.remove(0);
         
-        String topLngStr = String.valueOf(topLng);
-        String botLngStr = String.valueOf(botLng);
-        
         for (List<String> fileLine : wayFileLines) {
             Double startLng = graph.getLng(fileLine.get(startIndex));
             Double endLng = graph.getLng(fileLine.get(endIndex));
-            if ((String.valueOf(startLng).substring(0, topLngStr.length()).compareTo(topLngStr) >= 0 || String.valueOf(endLng).substring(0, topLngStr.length()).compareTo(topLngStr) >= 0) && (String.valueOf(startLng).substring(0, botLngStr.length()).compareTo(botLngStr) <= 0 || String.valueOf(endLng).substring(0, botLngStr.length()).compareTo(botLngStr) >= 0)) {
+            if ((startLng > topLng && startLng < botLng) || (endLng > topLng && endLng < botLng)) {
                 mapWays.add(new MapWay(fileLine.get(idIndex), fileLine.get(startIndex), graph.getLat(fileLine.get(startIndex)), startLng, fileLine.get(endIndex), graph.getLat(fileLine.get(endIndex)), endLng, fileLine.get(nameIndex)));
             }
         }

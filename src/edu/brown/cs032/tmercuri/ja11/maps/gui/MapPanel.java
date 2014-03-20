@@ -1,7 +1,7 @@
 package edu.brown.cs032.tmercuri.ja11.maps.gui;
 
+import edu.brown.cs032.tmercuri.ja11.maps.backend.LatLng;
 import java.awt.Color;
-import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.LayoutManager;
@@ -69,21 +69,19 @@ public class MapPanel extends JPanel {
 	
 	public void setMap (MapData mapData){
 		this.mapData = mapData;
-		try{
-		
-		int initialX = (int)(mapData.getTopLeftOfMap().getLng()+((mapData.getBotRightOfMap().getLng() -mapData.getTopLeftOfMap().getLng())/2));
-		System.out.println(initialX);
-		
-		int initialY = (int) (mapData.getBotRightOfMap().getLat() + ((mapData.getTopLeftOfMap().getLat()- mapData.getBotRightOfMap().getLng())/2));
-		System.out.println(initialY);
-		converter = new LatLngToPixel(mapData.getBotRightOfMap().getLat(), mapData.getTopLeftOfMap().getLng());
-		toDisplay.addAll(mapData.getAllBetween(converter.pixelToLat(initialY + getHeight()), 
-						converter.pixelToLng(initialX - getWidth()), converter.pixelToLat(initialY + getHeight()), converter.pixelToLng(initialX + getWidth())));
-		}
-		catch (IOException e){
+
+		try {
+            LatLng initTopLeft = mapData.getTopLeftOfMap();
+            LatLng initBotRight = mapData.getBotRightOfMap();
+            double initialLng = (initTopLeft.getLng()+initBotRight.getLng())/2;
+            double initialLat = (initTopLeft.getLat()+initBotRight.getLat())/2;
+            converter = new LatLngToPixel(initBotRight.getLat(), initTopLeft.getLng());
+            toDisplay.addAll(mapData.getAllBetween(initialLat + 0.001, 
+						initialLng - 0.001, initialLat - 0.001, initialLng + 0.001));
+        } catch (IOException e) {
 			System.out.println("ERROR: problem with IO");
-		}
-		}
+        }
+    }
 	
 	@Override
 	public void paint(Graphics g){

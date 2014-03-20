@@ -179,10 +179,12 @@ public class TSVBinarySearch {
                     seekToPrevNewLine();
                 }
                 seekToNextNewLine();
-                while (botBound.compareTo(checkLine(botBound, keyColumn)) >= 0) {
-                    seekToPrevNewLine();
-                    linesToReturn.add(Arrays.asList(readToNextNewLine().trim().split("\t")));
-                }
+                try {
+                    while (botBound.compareTo(checkLine(botBound, keyColumn)) >= 0) {
+                        seekToPrevNewLine();
+                        linesToReturn.add(Arrays.asList(readToNextNewLine().trim().split("\t")));
+                    }
+                } catch (NullPointerException ex) {}
                 return linesToReturn;
             } // we are too high; new top is the mid
             else if (cmp < 0) {

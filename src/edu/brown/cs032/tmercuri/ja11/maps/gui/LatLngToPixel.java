@@ -5,17 +5,17 @@ public class LatLngToPixel {
 	
 	private double latScale = 8000;
 	private double lngScale = 110000;
-	private double lowLat;
+	private double highLat;
 	private double lowLng;
 	
 	
-	public LatLngToPixel (double lowLat, double lowLng){
-		this.lowLat = lowLat;
+	public LatLngToPixel (double highLat, double lowLng){
+		this.highLat = highLat;
 		this.lowLng = lowLng;
 	}
 	
 	public int LatToPixel (double  lat){
-		double distance = lat - lowLat;
+		double distance = highLat - lat;
 		int result =  (int) (distance * latScale);
 		return result;
 	}
@@ -28,7 +28,7 @@ public class LatLngToPixel {
 	
 	public double pixelToLat(int pixel){
 		double distance = pixel/ latScale;
-		return (lowLat+ distance);
+		return (highLat - distance);
 	}
 	
 	public double pixelToLng(int pixel){

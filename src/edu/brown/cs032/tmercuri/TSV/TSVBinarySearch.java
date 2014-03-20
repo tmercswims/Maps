@@ -167,14 +167,15 @@ public class TSVBinarySearch {
             
             // see if this line contains query in giveColumn
             String res = checkLine(topBound, keyColumn);
-            int cmp = res.compareTo(topBound);
+            int cmp1 = res.compareTo(topBound);
+            int cmp2 = res.compareTo(botBound);
             // it does
-            if (cmp == 0) {
+            if (cmp1 > 0 && cmp2 < 0) {
                 // get back to the beginning of the line
                 seekToPrevNewLine();
                 // for duplicate keys
                 seekToPrevNewLine();
-                for (String before = checkLine(topBound, keyColumn); before.equals(topBound); before = checkLine(topBound, keyColumn)) {
+                for (String before = checkLine(topBound, keyColumn); (before.compareTo(topBound) > 0 && before.compareTo(botBound) < 0); before = checkLine(topBound, keyColumn)) {
                     seekToPrevNewLine();
                     seekToPrevNewLine();
                 }
@@ -187,10 +188,10 @@ public class TSVBinarySearch {
                 } catch (NullPointerException ex) {}
                 return linesToReturn;
             } // we are too high; new top is the mid
-            else if (cmp < 0) {
+            else if (cmp1 < 0) {
                 top = mid+1;
             } // we are too low; new bot is the mid
-            else if (cmp > 0) {
+            else if (cmp1 > 0) {
                 bot = mid-1;
             }
         }

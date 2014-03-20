@@ -31,9 +31,17 @@ public class LatLngToPixel {
 		return (highLat - distance);
 	}
 	
+	public double pixelToLatDistance(int pixel){
+		return (pixel/latScale);
+	}
+	
 	public double pixelToLng(int pixel){
 		double distance = pixel/lngScale;
 		return (lowLng + distance);
+	}
+	
+	public double pixelToLngDistance(int pixel){
+		return (pixel/lngScale);
 	}
 	
 	

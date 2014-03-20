@@ -62,7 +62,6 @@ public class MapPanel extends JPanel {
 		setDoubleBuffered(true);
 		toDisplay = new ArrayList<MapWay>();
 		converter = new LatLngToPixel(40.15, -73.8);
-		toDisplay.add(new MapWay("bu", "ca", 40.1581762, -73.7485664, "hey", 40.13111, - 73.7232, "John street" ));
 		pathWay = new ArrayList<MapWay>();
 		hasPath = false;
 		
@@ -80,9 +79,15 @@ public class MapPanel extends JPanel {
             LatLng initBotRight = mapData.getBotRightOfMap();
             double initialLng = (initTopLeft.getLng()+initBotRight.getLng())/2;
             double initialLat = (initTopLeft.getLat()+initBotRight.getLat())/2;
-            converter = new LatLngToPixel(initBotRight.getLat(), initTopLeft.getLng());
-            toDisplay.addAll(mapData.getAllBetween(initialLat + 0.1, 
-						initialLng - 0.1, initialLat - 0.1, initialLng + 0.1));
+            converter = new LatLngToPixel(initTopLeft.getLat(), initTopLeft.getLng());
+            System.out.println("The span in lat is+"+ converter.pixelToLatDistance(getHeight()));
+            System.out.println("The span in lng is"+ converter.pixelToLngDistance(getWidth()));
+            toDisplay.addAll(mapData.getAllBetween(initialLat + converter.pixelToLatDistance(getHeight()), 
+						initialLng - converter.pixelToLngDistance(getWidth()), initialLat - converter.pixelToLatDistance(getHeight()), initialLng + converter.pixelToLngDistance(getWidth())));
+            System.out.println("found all roads");
+            centerOnPoint(converter.LngToPixel(initialLng), converter.LatToPixel(initialLat));
+            System.out.println("there are " + toDisplay.size()+ " roads to show");
+            repaint();
         } catch (IOException e) {
 			System.out.println("ERROR: problem with IO");
         }
@@ -129,6 +134,7 @@ public class MapPanel extends JPanel {
 	
 	
 	private void centerOnPoint(int x, int y){
+		System.out.println("Centering on "+ x+ ", "+ y);
 		int xSize = getWidth();
 		int ySize = getHeight();
 		xOffset = (xSize /2) + x;
@@ -177,7 +183,8 @@ public class MapPanel extends JPanel {
 								break;
 							}
 						}
-					}
+					System.out.println("coordinates are "+ actualPos.getX()+ ", "+ actualPos.getY());
+				}
 				repaint();
 			} catch (NoninvertibleTransformException e1) {
 				System.out.println("ERROR: NonInvertible");

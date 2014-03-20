@@ -5,30 +5,34 @@ public class LatLngToPixel {
 	
 	private double latScale = 8000;
 	private double lngScale = 11000;
-	private double highLat;
-	private double lowLng;
+	private double anchorLat;
+	private double anchorLng;
+	private double anchorX;
+	private double anchorY;
 	
 	
-	public LatLngToPixel (double highLat, double lowLng){
-		this.highLat = highLat;
-		this.lowLng = lowLng;
+	public LatLngToPixel (double anchorLat, double anchorLng){
+		this.anchorLat = anchorLat;
+		this.anchorLng = anchorLng;
+		anchorX = 0;
+		anchorY = 0;
 	}
 	
-	public int LatToPixel (double  lat){
-		double distance = highLat - lat;
+	public int LatToPixel (double lat){
+		double distance = anchorLat - lat;
 		int result =  (int) (distance * latScale);
 		return result;
 	}
 	
 	public int LngToPixel (double lng){
-		double distance = lng - lowLng;
+		double distance = lng - anchorLng;
 		int result = (int) (distance *lngScale);
 		return result;
 	}
 	
 	public double pixelToLat(int pixel){
 		double distance = pixel/ latScale;
-		return (highLat - distance);
+		return (anchorLat - distance);
 	}
 	
 	public double pixelToLatDistance(int pixel){
@@ -37,7 +41,7 @@ public class LatLngToPixel {
 	
 	public double pixelToLng(int pixel){
 		double distance = pixel/lngScale;
-		return (lowLng + distance);
+		return (anchorLng + distance);
 	}
 	
 	public double pixelToLngDistance(int pixel){

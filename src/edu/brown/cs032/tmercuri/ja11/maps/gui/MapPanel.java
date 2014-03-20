@@ -75,11 +75,10 @@ public class MapPanel extends JPanel {
 		this.mapData = mapData;
 
 		try {
-            LatLng initTopLeft = mapData.getTopLeftOfMap();
-            LatLng initBotRight = mapData.getBotRightOfMap();
-            double initialLng = (initTopLeft.getLng()+initBotRight.getLng())/2;
-            double initialLat = (initTopLeft.getLat()+initBotRight.getLat())/2;
-            converter = new LatLngToPixel(initTopLeft.getLat(), initTopLeft.getLng());
+			LatLng point = mapData.getNearestPoint(41.709574, -71.256164);
+			double initialLat = point.getLat();
+			double initialLng = point.getLng();
+            converter = new LatLngToPixel(point.getLat(), point.getLng());
             System.out.println("The span in lat is+"+ converter.pixelToLatDistance(getHeight()));
             System.out.println("The span in lng is"+ converter.pixelToLngDistance(getWidth()));
             toDisplay.addAll(mapData.getAllBetween(initialLat + converter.pixelToLatDistance(getHeight()), 

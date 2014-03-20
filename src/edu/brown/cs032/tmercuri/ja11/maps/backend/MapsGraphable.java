@@ -69,12 +69,12 @@ public class MapsGraphable implements Graphable<String> {
     
     @Override
     public LatLng getTopLeftPoint() throws IOException {
-        return new LatLng(nodes.getColumnOnFirstLine("id"), Double.parseDouble(nodes.getColumnOnFirstLine("latitude")), Double.parseDouble(nodes.getColumnOnFirstLine("logitude")));
+        return new LatLng(nodes.getColumnOnFirstLine("id"), Double.parseDouble(nodes.getColumnOnFirstLine("latitude")), Double.parseDouble(nodes.getColumnOnFirstLine("longitude")));
     }
     
     @Override
     public LatLng getBotRightPoint() throws IOException {
-        return new LatLng(nodes.getColumnOnLastLine("id"), Double.parseDouble(nodes.getColumnOnLastLine("latitude")), Double.parseDouble(nodes.getColumnOnLastLine("logitude")));
+        return new LatLng(nodes.getColumnOnLastLine("id"), Double.parseDouble(nodes.getColumnOnLastLine("latitude")), Double.parseDouble(nodes.getColumnOnLastLine("longitude")));
     }
 
     @Override

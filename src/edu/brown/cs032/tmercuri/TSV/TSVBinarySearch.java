@@ -197,7 +197,7 @@ public class TSVBinarySearch {
     }
     
     public String getColumnOnFirstLine(String column) throws IOException {
-        int columnNum = columns.get(column);
+        Integer columnNum = columns.get(column);
         raf.seek(0);
         
         seekToNextNewLine();

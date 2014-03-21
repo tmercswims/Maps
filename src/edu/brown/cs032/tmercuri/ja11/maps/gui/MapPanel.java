@@ -130,6 +130,15 @@ public class MapPanel extends JPanel {
 		
 	}
 	
+	private void requestSquare(){
+		try {
+			toDisplay.addAll(mapData.getAllBetween(converter.pixelToLat((int) topLeft.getY()), converter.pixelToLng((int) topLeft.getX()), converter.pixelToLat((int)bottomRight.getY()), converter.pixelToLng((int) bottomRight.getX())));
+			repaint();
+		} catch (IOException e) {
+			System.out.println("ERROR: reading map");
+		} 
+	}
+	
 	
 	private void centerOnPoint(int x, int y){
 		System.out.println("Centering on "+ x+ ", "+ y);
@@ -210,6 +219,7 @@ public class MapPanel extends JPanel {
 			yOffset += newY;
 			
 			repaint();	
+			requestSquare();
 		}
 
 		//These methods do nothing
@@ -228,6 +238,7 @@ public class MapPanel extends JPanel {
 				scale -= (0.1* e.getWheelRotation());
 				scale = Math.max(0.0000001, scale);
 				repaint();
+				requestSquare();
 			}
 		}
 		

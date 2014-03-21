@@ -23,7 +23,11 @@ import javax.swing.JPanel;
 import edu.brown.cs032.tmercuri.ja11.maps.backend.MapData;
 
 
-
+/** 
+ * MapPanel renders the map
+ * @author ja11
+ *
+ */
 public class MapPanel extends JPanel {
 
 	/**
@@ -49,6 +53,8 @@ public class MapPanel extends JPanel {
 		P1, P2;
 	}
 	
+	/** Constructor **/
+	
 	public MapPanel(LayoutManager manager){
 		super(manager);
 		topLeft = new Point2D.Double(0, 0);
@@ -71,39 +77,48 @@ public class MapPanel extends JPanel {
 		addMouseWheelListener(new Scaler());	
 	}
 	
+	/**
+	 * 
+	 * @param mapData: the map to be used to get information for the map 
+	 */
 	public void setMap (MapData mapData){
 		this.mapData = mapData;
 
 		try {
+			// Default: CIT
 			LatLng point = mapData.getNearestPoint(41.827404, -71.399323);
 			double initialLat = point.getLat();
 			double initialLng = point.getLng();
             converter = new LatLngToPixel(point.getLat(), point.getLng());
-            System.out.println("The span in lat is "+ converter.pixelToLatDistance(getHeight()));
-            System.out.println("The span in lng is "+ converter.pixelToLngDistance(getWidth()));
+            // Find the roads
             toDisplay.addAll(mapData.getAllBetween(initialLat + converter.pixelToLatDistance(getHeight()), 
 						initialLng - converter.pixelToLngDistance(getWidth()), initialLat - converter.pixelToLatDistance(getHeight()), initialLng + converter.pixelToLngDistance(getWidth())));
-            System.out.println("found all roads");
+           // Display roads
             centerOnPoint(converter.LngToPixel(initialLng), converter.LatToPixel(initialLat));
-            System.out.println("there are " + toDisplay.size()+ " roads to show");
-            repaint();
+           repaint();
         } catch (IOException e) {
 			System.out.println("ERROR: problem with IO");
         }
     }
 	
+	/**
+	 * paint
+	 */
 	@Override
 	public void paint(Graphics g){
 		super.paint(g);
+		// Deals with the transformations by scroling
 		AffineTransform transformer = new AffineTransform();
 		transformer.translate(xOffset, yOffset);
 		transformer.scale(scale, scale);
 		Graphics2D g2d = (Graphics2D) g;
 		g2d.setTransform(transformer);
+		// First draws the normal ways
 		g2d.setColor(Color.BLACK);
 		for (MapWay way : toDisplay){
 			drawMapWay(g2d, way);
 		}
+		// Draws any points drawn by the user
 		g2d.setColor(Color.RED);
 		if (PointOne!= null){
 			g2d.drawOval((int)PointOne.getX(), (int)PointOne.getY(), 5, 5);
@@ -112,6 +127,7 @@ public class MapPanel extends JPanel {
 				g2d.drawOval((int) PointTwo.getX(), (int)PointTwo.getY(), 5, 5);
 			}
 		}
+		// Sketches out the path if there is one
 		if (hasPath){
 			g2d.setColor(Color.MAGENTA);
 			for (MapWay way: pathWay){
@@ -130,6 +146,9 @@ public class MapPanel extends JPanel {
 		
 	}
 	
+	/**
+	 * requestSquare(): updates the screen to visualise everything within the bounds of the panel
+	 */
 	private void requestSquare(){
 		try {
 			toDisplay.addAll(mapData.getAllBetween(converter.pixelToLat((int) topLeft.getY()), converter.pixelToLng((int) topLeft.getX()), converter.pixelToLat((int)bottomRight.getY()), converter.pixelToLng((int) bottomRight.getX())));
@@ -139,7 +158,11 @@ public class MapPanel extends JPanel {
 		} 
 	}
 	
-	
+	/**
+	 * 
+	 * @param x, the x-coordinate of the point to be in the middle of the panel
+	 * @param y, the y-coordinate of the point to be in the middle of the panel
+	 */
 	private void centerOnPoint(int x, int y){
 		System.out.println("Centering on "+ x+ ", "+ y);
 		int xSize = getWidth();
@@ -150,11 +173,21 @@ public class MapPanel extends JPanel {
 		repaint();
 	}
 	
+	/**
+	 * 
+	 * @param graphics, the graphics of the panel
+	 * @param way, the way to be drawn
+	 */
 	private void drawMapWay(Graphics2D graphics, MapWay way){
 		way.convert(converter);
 		graphics.drawLine(way.getStartPixelX(), way.getStartPixelY(), way.getEndPixelX(), way.getEndPixelY());
 	}
 	
+	/***
+	 * Scroller deals with the translation by mouseclicking
+	 * @author ja11
+	 *
+	 */
 	private class Scroller implements MouseListener, MouseMotionListener{
 		private int initialX;
 		private int initialY;
@@ -165,6 +198,9 @@ public class MapPanel extends JPanel {
 			initialY = 0;
 		}
 		
+		/** mouseclicked allows users to select points
+		 * 
+		 */
 		@Override
 		public void mouseClicked(MouseEvent e) {
 			Graphics2D g2d = (Graphics2D) getGraphics();
@@ -230,6 +266,11 @@ public class MapPanel extends JPanel {
 		
 	}
 	
+	/**
+	 * Scaler lets the user zoom in and out of the panel
+	 * @author ja11
+	 *
+	 */
 	private class Scaler implements MouseWheelListener{
 
 		@Override
@@ -243,6 +284,8 @@ public class MapPanel extends JPanel {
 		}
 		
 	}
+	
+	/** Some getters, for coordinates which have been already converted to lat and lng **/
 	
 	public double getLatPointOne(){
 		 return  (converter.pixelToLat((int) PointOne.getY()));

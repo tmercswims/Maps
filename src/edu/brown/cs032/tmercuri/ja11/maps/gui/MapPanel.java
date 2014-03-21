@@ -263,13 +263,14 @@ public class MapPanel extends JPanel {
 			xOffset += newX;
 			yOffset += newY;
 			
-			repaint();	
-			requestSquare();
+			repaint();
 		}
 
 		//These methods do nothing
         @Override
-		public void mouseReleased(MouseEvent e) {}
+		public void mouseReleased(MouseEvent e) {
+			requestSquare();
+        }
         @Override
 		public void mouseEntered(MouseEvent e) {}
         @Override

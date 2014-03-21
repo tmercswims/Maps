@@ -64,22 +64,26 @@ public class Maps {
     private static void commandLineInterface(MapData map) throws IOException {
         Scanner s = new Scanner(System.in);
         while (s.hasNextLine()) {
+            List<List<String>> path;
             String line = s.nextLine().replaceAll("\\s+", " ");
             // got an empty line
             if (line.equals(" ") || line.equals("")) {
                 break;
             }
-            String[] lineWords = line.split("\" \"");
-            // invalid input
-            if (lineWords.length != 4) {
-                throw new IllegalArgumentException("bad input");
-            }
-            List<List<String>> path;
             // in quotes, assume we are given cross streets
-            if (lineWords[0].startsWith("\"")) {
+            if (line.startsWith("\"")) {
+                String[] lineWords = line.split("\" \"");
+                // invalid input
+                if (lineWords.length != 4) {
+                    throw new IllegalArgumentException("bad input");
+                }
                 path = map.getPath(lineWords[0].replaceAll("\"", ""), lineWords[1].replaceAll("\"", ""), lineWords[2].replaceAll("\"", ""), lineWords[3].replaceAll("\"", ""));
             } // otherwise, lats and lngs
             else {
+                String[] lineWords = line.split(" ");
+                if (lineWords.length != 4) {
+                    throw new IllegalArgumentException("bad input");
+                }
                 path = map.getPath(Double.parseDouble(lineWords[0]), Double.parseDouble(lineWords[1]), Double.parseDouble(lineWords[2]), Double.parseDouble(lineWords[3]));
             }
             printPath(path);

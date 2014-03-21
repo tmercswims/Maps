@@ -7,6 +7,10 @@ import edu.brown.cs032.ja11.autocorrect.dictionary.Vocab;
 import java.util.ArrayList;
 import java.util.Collection;
 
+/**
+ *
+ * @author Thomas Mercurio
+ */
 public class WhiteSpaceSearcher implements Searcher {
 	
 	/**vocabulary: the Vocab the Searcher is working with**/

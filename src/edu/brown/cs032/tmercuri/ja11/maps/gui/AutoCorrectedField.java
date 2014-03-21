@@ -1,8 +1,3 @@
-/*
- * Thomas Mercurio, tmercuri
- * CS032, Spring 2014
- */
-
 package edu.brown.cs032.tmercuri.ja11.maps.gui;
 
 import edu.brown.cs032.tmercuri.ja11.maps.backend.MapData;
@@ -10,6 +5,12 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.event.ActionListener;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.List;
 import javax.swing.BorderFactory;
 import javax.swing.JList;
@@ -19,8 +20,7 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
 /**
- *
- * @author Thomas Mercurio
+ * A panel for a field that is auto-complete/-corrected.
  */
 public class AutoCorrectedField extends JPanel {
     
@@ -30,6 +30,11 @@ public class AutoCorrectedField extends JPanel {
     private final JList<String> list;
     private MapData map;
     
+    /**
+     * Initial map, and the tooltip for the field.
+     * @param map
+     * @param fieldToolTip
+     */
     public AutoCorrectedField(MapData map, String fieldToolTip) {
         super(new BorderLayout());
         this.field = new JTextField();
@@ -68,6 +73,78 @@ public class AutoCorrectedField extends JPanel {
                 list.setVisible(results.size() > 0);
             }
         });
+        field.addFocusListener(new FocusListener() {
+            @Override
+            public void focusGained(FocusEvent e) {
+                field.selectAll();
+            }
+
+            @Override
+            public void focusLost(FocusEvent e) {
+                list.setVisible(false);
+            }
+        });
+        field.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyPressed(KeyEvent e) {
+                switch(e.getKeyCode()) {
+                    // down goes into the list at the top...
+                    case KeyEvent.VK_DOWN:
+                        list.requestFocus();
+                        list.setSelectedIndex(0);
+                        break;
+                    // and up goes into the list at the bottom
+                    case KeyEvent.VK_UP:
+                        list.requestFocus();
+                        list.setSelectedIndex(list.getModel().getSize()-1);
+                        break;
+                }
+            }
+        });
+        
+        list.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                // if there is a single click...
+                if (e.getClickCount() == 1) {
+                    // ...put that item in the text field
+                    String selectedItem = list.getSelectedValue();
+                    field.setText(selectedItem);
+                }
+            }
+        });
+        list.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyPressed(KeyEvent e) {
+                switch (e.getKeyCode()) {
+                    // if the user presses enter, right, or space on an item...
+                    case KeyEvent.VK_RIGHT:
+                    case KeyEvent.VK_SPACE:
+                    case KeyEvent.VK_ENTER:
+                        // ...put that item in the text field
+                        String selectedItem = list.getSelectedValue();
+                        field.setText(selectedItem);
+                        field.requestFocus();
+                        break;
+                    // press up...
+                    case KeyEvent.VK_UP:
+                        // ...and at the top of the list...
+                        if (list.getSelectedIndex() == 0) {
+                            // ..go into the field
+                            field.requestFocus();
+                        }
+                        break;
+                    // press down...
+                    case KeyEvent.VK_DOWN:
+                        // ...and at the bottom of the list...
+                        if (list.getSelectedIndex() == list.getModel().getSize()-1) {
+                            // ...go into the field
+                            field.requestFocus();
+                        }
+                        break;
+                }
+            }
+        });
         
         field.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createMatteBorder(1, 1, 1, 1, Color.black), BorderFactory.createEmptyBorder(2, 2, 2, 2)));
         field.setFont(new Font("SansSerif", Font.PLAIN, 15));
@@ -86,22 +163,26 @@ public class AutoCorrectedField extends JPanel {
         this.setEnabled(false);
     }
     
-    public void setListVisible(boolean visible) {
-        list.setVisible(visible);
-    }
-    
-    public void setListData(String[] newListData) {
-        list.setListData(newListData);
-    }
-    
+    /**
+     * Gets the field's text.
+     * @return
+     */
     public String getText() {
         return field.getText();
     }
     
+    /**
+     * Adds an ActionListener to the field.
+     * @param listener
+     */
     public void addActionListener(ActionListener listener) {
         field.addActionListener(listener);
     }
     
+    /**
+     * Gives a new MapData to the field.
+     * @param newMap
+     */
     public void setMap(MapData newMap) {
         this.map = newMap;
     }

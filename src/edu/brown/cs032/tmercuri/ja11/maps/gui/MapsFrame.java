@@ -1,8 +1,3 @@
-/*
- * Thomas Mercurio, tmercuri
- * CS032, Spring 2014
- */
-
 package edu.brown.cs032.tmercuri.ja11.maps.gui;
 
 import edu.brown.cs032.tmercuri.ja11.maps.backend.MapData;
@@ -14,6 +9,8 @@ import java.awt.GridLayout;
 import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -29,8 +26,7 @@ import javax.swing.JPanel;
 import javax.swing.WindowConstants;
 
 /**
- *
- * @author Thomas Mercurio
+ * A JFrame that is a map.
  */
 public class MapsFrame extends JFrame {
     
@@ -42,6 +38,10 @@ public class MapsFrame extends JFrame {
     private AutoCorrectedField one, two, three, four;
     MapPanel mainPanel;
     
+    /**
+     * A MapFrame with an initial map.
+     * @param map
+     */
     public MapsFrame(MapData map) {
         super("Maps");
         this.map = map;
@@ -65,7 +65,7 @@ public class MapsFrame extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (!one.getText().equals("") && !two.getText().equals("") && !three.getText().equals("") && !four.getText().equals("")) {
-                    pool.execute(new PathFinder(map, one.getText(), two.getText(), three.getText(), four.getText(), null));
+                    pool.execute(new PathFinder(map, mainPanel, one.getText(), two.getText(), three.getText(), four.getText()));
                 }
             }
         };
@@ -123,20 +123,38 @@ public class MapsFrame extends JFrame {
         master.add(inputArea, BorderLayout.NORTH);
         master.add(right, BorderLayout.EAST);
         
-        ActionListener startSearch  = new ActionListener() {
+        mainPanel.addMouseListener(new MouseListener() {
+
             @Override
-            public void actionPerformed(ActionEvent e) {
-            	System.out.println("this will work");
-            // pool.execute(map.getPath(mainPanel.getLatPointOne(), mainPanel.getLngPointOne(), mainPanel.getLatPointTwo(), mainPanel.getLngPointTwo()));
-        }
-        };
+            public void mouseClicked(MouseEvent e) {
+                if (e.getButton() == MouseEvent.BUTTON2) {
+                    double latPointOne = mainPanel.getLatPointOne();
+                    double lngPointOne = mainPanel.getLngPointOne();
+                    double latPointTwo = mainPanel.getLatPointTwo();
+                    double lngPointTwo = mainPanel.getLngPointTwo();
+                    pool.execute(new PointPathFinder(map, mainPanel, latPointOne, lngPointOne, latPointTwo, lngPointTwo));
+                }
+            }
+
+            @Override
+            public void mousePressed(MouseEvent e) {}
+
+            @Override
+            public void mouseReleased(MouseEvent e) {}
+
+            @Override
+            public void mouseEntered(MouseEvent e) {}
+
+            @Override
+            public void mouseExited(MouseEvent e) {}
+        });
         mainPanel.setVisible(true);
         master.add(mainPanel, BorderLayout.CENTER);
         
         add(master);
         pack();
         setSize(new Dimension(1400, 800));
-        setResizable(false);
+        //setResizable(false);
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         
         List<Image> icons = new ArrayList<>();
@@ -154,6 +172,10 @@ public class MapsFrame extends JFrame {
         setVisible(true);
     }
     
+    /**
+     * Changes the map that this frame uses.
+     * @param newMap
+     */
     public void setMap(MapData newMap) {
         this.map = newMap;
         one.setMap(newMap);

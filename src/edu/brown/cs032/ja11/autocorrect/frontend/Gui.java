@@ -8,15 +8,26 @@ import javax.swing.JPanel;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
+/**
+ *
+ * @author Thomas Mercurio
+ */
 public class Gui implements PresentingResults {
 
 	private final Engine engine;
-	
-	public Gui(Engine engine){
+
+    /**
+     *
+     * @param engine
+     */
+    public Gui(Engine engine){
 		this.engine = engine;
 	}
-	
-	@Override
+
+    /**
+     *
+     */
+    @Override
 	public void run() {
 		JFrame frame = new JFrame("Autocorrect");
 		frame.setSize(500, 170);

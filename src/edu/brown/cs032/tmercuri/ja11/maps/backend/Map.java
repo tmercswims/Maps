@@ -25,11 +25,27 @@ public class Map {
     private final KDTree<Dimension<String>, String> tree;
     private final Graph<String> graph;
     
+    /**
+     *
+     * @param waysFilename
+     * @param nodesFilename
+     * @param indexFilename
+     * @throws IOException
+     */
     public Map(String waysFilename, String nodesFilename, String indexFilename) throws IOException {
         this.tree = new SlowTree<>(getPointsForTree(nodesFilename));
         this.graph = new Graph<>(getGraphableForGraph(waysFilename, nodesFilename, indexFilename));
     }
     
+    /**
+     *
+     * @param st1
+     * @param cst1
+     * @param st2
+     * @param cst2
+     * @return
+     * @throws IOException
+     */
     public List<List<String>> getPath(String st1, String cst1, String st2, String cst2) throws IOException {
         String inter1 = graph.findIntersection(st1, cst1);
         String inter2 = graph.findIntersection(st2, cst2);
@@ -37,6 +53,15 @@ public class Map {
         return graph.returnShortestPathToFromA(inter1, inter2);
     }
     
+    /**
+     *
+     * @param lat1
+     * @param lng1
+     * @param lat2
+     * @param lng2
+     * @return
+     * @throws IOException
+     */
     public List<List<String>> getPath(double lat1, double lng1, double lat2, double lng2) throws IOException {
         String inter1 = getNearestPointTo(lat1, lng1);
         String inter2 = getNearestPointTo(lat2, lng2);
@@ -46,6 +71,13 @@ public class Map {
         return graph.returnShortestPathToFromA(inter2, inter1);
     }
     
+    /**
+     *
+     * @param r
+     * @param refID
+     * @return
+     * @throws IOException
+     */
     public List<String> getAllPointsWithinRadius(int r, String refID) throws IOException {
         return this.tree.findAllWithinRadius(r, true, new LatLng("", graph.getLat(refID), graph.getLng(refID)));
     }

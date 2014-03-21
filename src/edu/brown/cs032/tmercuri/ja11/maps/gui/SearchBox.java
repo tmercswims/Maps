@@ -5,6 +5,10 @@ import java.util.Collection;
 
 import edu.brown.cs032.tmercuri.ja11.maps.backend.MapData;
 
+/**
+ *
+ * @author Thomas Mercurio
+ */
 public class SearchBox implements Runnable {
 	
 	Collection<MapWay> toFill;
@@ -14,8 +18,19 @@ public class SearchBox implements Runnable {
 	int botY;
 	MapData map;
 	
-	LatLngToPixel converter; 
-	public SearchBox(MapData map, Collection<MapWay> toFill, int topX, int topY, int botX, int botY, LatLngToPixel converter){
+	LatLngToPixel converter;
+
+    /**
+     *
+     * @param map
+     * @param toFill
+     * @param topX
+     * @param topY
+     * @param botX
+     * @param botY
+     * @param converter
+     */
+    public SearchBox(MapData map, Collection<MapWay> toFill, int topX, int topY, int botX, int botY, LatLngToPixel converter){
 		this.topX = topX;
 		this.topY = topY;
 		this.botX = botX;

@@ -71,7 +71,7 @@ public class Maps {
             if (line.equals(" ") || line.equals("")) {
                 break;
             }
-            String[] lineWords = line.split(" ");
+            String[] lineWords = line.split("\" \"");
             // invalid input
             if (lineWords.length != 4) {
                 throw new IllegalArgumentException("bad input");

@@ -28,8 +28,12 @@ public class CommandLineParser {
 	public CommandLineParser(){
 	this.ui = UIEnums.CLI;
 	}
-	
-	public static void main (String[] args){
+
+    /**
+     *
+     * @param args
+     */
+    public static void main (String[] args){
 		try{
 		CommandLineParser toRun = new CommandLineParser();
 		toRun.run(args);

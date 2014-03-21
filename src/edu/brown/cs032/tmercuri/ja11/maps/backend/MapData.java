@@ -1,8 +1,3 @@
-/*
- * Thomas Mercurio, tmercuri
- * CS032, Spring 2014
- */
-
 package edu.brown.cs032.tmercuri.ja11.maps.backend;
 
 import edu.brown.cs032.ja11.autocorrect.frontend.Autocorrecter;
@@ -19,8 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- *
- * @author Thomas Mercurio
+ * A class for all the data, data structures, and operations that a map needs.
  */
 public class MapData {
     
@@ -28,32 +22,64 @@ public class MapData {
     private final Graph<String> graph;
     private final Autocorrecter autocorrecter;
     
+    /**
+     * A MapData for the given data files.
+     * @param waysFilename
+     * @param nodesFilename
+     * @param indexFilename
+     * @throws IOException
+     */
     public MapData(String waysFilename, String nodesFilename, String indexFilename) throws IOException {
         this.tree = new SlowTree<>(getPointsForTree(nodesFilename));
         this.graph = new Graph<>(getGraphableForGraph(waysFilename, nodesFilename, indexFilename));
         this.autocorrecter = new Autocorrecter(indexFilename);
     }
     
+    /**
+     * Gets the path between the intersection of st1 and cst1 and the intersection of st2 and cst2.
+     * @param st1
+     * @param cst1
+     * @param st2
+     * @param cst2
+     * @return
+     * @throws IOException
+     */
     public List<List<String>> getPath(String st1, String cst1, String st2, String cst2) throws IOException {
         String inter1 = graph.findIntersection(st1, cst1);
         String inter2 = graph.findIntersection(st2, cst2);
         graph.computePathA(inter1, inter2);
-        return graph.returnShortestPathToFromA(inter1, inter2);
+        return graph.returnShortestPathToFromA(inter2, inter1);
     }
     
+    /**
+     * Gets the path between the point closest to (lat1, lng1) and (lat2, lng2).
+     * @param lat1
+     * @param lng1
+     * @param lat2
+     * @param lng2
+     * @return
+     * @throws IOException
+     */
     public List<List<String>> getPath(double lat1, double lng1, double lat2, double lng2) throws IOException {
         String inter1 = getNearestPointTo(lat1, lng1);
         String inter2 = getNearestPointTo(lat2, lng2);
-        System.out.println("inter1 "+inter1);
-        System.out.println("inter2 "+inter2);
         graph.computePathA(inter1, inter2);
         return graph.returnShortestPathToFromA(inter2, inter1);
     }
     
+    /**
+     * Gets every way that has at least one end inside the box whose top left corner is (topLat, topLng) and bottom right corner is (botLat, botLng).
+     * @param topLat
+     * @param topLng
+     * @param botLat
+     * @param botLng
+     * @return
+     * @throws IOException
+     */
     public List<MapWay> getAllBetween(Double topLat, Double topLng, Double botLat, Double botLng) throws IOException {
         List<MapWay> mapWays = new ArrayList<>();
         
-        List<List<String>> wayFileLines = graph.getBetweenLats(botLat, topLat);
+        List<List<String>> wayFileLines = graph.getBetween(botLat, topLat, topLng, botLng);
         int idIndex = wayFileLines.get(0).indexOf("id");
         int startIndex = wayFileLines.get(0).indexOf("start");
         int endIndex = wayFileLines.get(0).indexOf("end");
@@ -73,20 +99,25 @@ public class MapData {
         return mapWays;
     }
     
+    /**
+     * Uses the kdtree to find the nearest point to (lat lng).
+     * @param lat
+     * @param lng
+     * @return
+     * @throws IOException
+     */
     public LatLng getNearestPoint(double lat, double lng) throws IOException {
         LatLng ref = new LatLng("", lat, lng);
         String nodeID = tree.findNearestNeighbor(ref);
         return new LatLng(nodeID, graph.getLat(nodeID), graph.getLng(nodeID));
     }
     
-    public LatLng getTopLeftOfMap() throws IOException {
-        return graph.getTopLeft();
-    }
-    
-    public LatLng getBotRightOfMap() throws IOException {
-        return graph.getBotRight();
-    }
-    
+    /**
+     * Turns a list of way IDs into a list of MapWays.
+     * @param IDList
+     * @return
+     * @throws IOException
+     */
     public List<MapWay> wayIDsToMapWays(List<String> IDList) throws IOException {
         List<MapWay> ways = new ArrayList<>();
         
@@ -99,6 +130,11 @@ public class MapData {
         return ways;
     }
     
+    /**
+     * Uses the autocorrect to get suggestions for a string.
+     * @param input
+     * @return
+     */
     public List<String> getSuggestions(String input){
     	return autocorrecter.getResults(input);
     }

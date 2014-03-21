@@ -16,6 +16,12 @@ public class MapsRelationInfo implements RelationInfo<String> {
     private final String destinationNodeID, wayID;
     private final double weight;
     
+    /**
+     *
+     * @param destinationNodeID
+     * @param wayID
+     * @param weight
+     */
     public MapsRelationInfo(String destinationNodeID, String wayID, double weight) {
         this.destinationNodeID = destinationNodeID;
         this.wayID = wayID;

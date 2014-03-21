@@ -14,8 +14,19 @@ import java.util.List;
  */
 public abstract class Dimension<U> {
     
+    /**
+     *
+     */
     public int dimension;
+
+    /**
+     *
+     */
     public List<Double> coordinates;
+
+    /**
+     *
+     */
     public U id;
 
     /**

@@ -48,7 +48,7 @@ public class Vocab {
 	
 	/** addVocab builds the vocabulary stored in Vocab
 	 * 
-	 * @param filename, the name to a valid file with text
+     * @param inputWords
 	 * @throws FileNotFoundException if the filename is invalid
 	 * @throws IOException if the filereading encounters an IO error
 	 */

@@ -5,8 +5,8 @@
 
 package edu.brown.cs032.tmercuri.graph;
 
-import edu.brown.cs032.tmercuri.ja11.maps.backend.LatLng;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -32,23 +32,64 @@ public interface Graphable<T> {
      */
     public T getStreetName(T ID) throws IOException;
     
-    public List<String> getNodesOnStreet(T name) throws IOException;
+    /**
+     * Gets every node on a street called name.
+     * @param name
+     * @return
+     * @throws IOException
+     */
+    public ArrayList<String> getNodesOnStreet(T name) throws IOException;
     
+    /**
+     * Gets every way that crosses this node.
+     * @param ID
+     * @return
+     * @throws IOException
+     */
     public List<String> getWaysThatCrossNode(T ID) throws IOException;
     
+    /**
+     * Gets the node of the start of a way.
+     * @param ID
+     * @return
+     * @throws IOException
+     */
     public String getStartOfWay(T ID) throws IOException;
     
+    /**
+     * Gets the node of the end of a way.
+     * @param ID
+     * @return
+     * @throws IOException
+     */
     public String getEndOfWay(T ID) throws IOException;
     
+    /**
+     * Gets the lat of this node.
+     * @param ID
+     * @return
+     * @throws IOException
+     */
     public double getLat(T ID) throws IOException;
     
+    /**
+     * Gets the long of this node.
+     * @param ID
+     * @return
+     * @throws IOException
+     */
     public double getLng(T ID) throws IOException;
     
-    public List<List<String>> getBetweenLats(Double topLat, Double botLat) throws IOException;
-    
-    public LatLng getTopLeftPoint() throws IOException;
-    
-    public LatLng getBotRightPoint() throws IOException;
+    /**
+     * Gets every way that has at least one end inside the box whose top left corner is (topLat, topLng) and bottom right corner is (botLat, botLng).
+     * @param topLat
+     * @param botLat
+     * @param topLng
+     * @param botLng
+     * @return
+     * @throws IOException
+     */
+    public List<List<String>> getBetween(Double topLat, Double botLat, Double topLng, Double botLng) throws IOException;
     
     /**
      * Gives all neighbors of the given name

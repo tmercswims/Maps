@@ -138,8 +138,18 @@ public class TSVBinarySearch {
         return null;
     }
     
-    public List<List<String>> getAllBetween(String topBound, String botBound, String latKeyField, String lngKeyField) throws IOException {
-        Integer keyColumn = columns.get(latKeyField);
+    /**
+     *
+     * @param topLatBound
+     * @param botLatBound
+     * @param topLngBound
+     * @param botLngBound
+     * @param keyField
+     * @return
+     * @throws IOException
+     */
+    public List<List<String>> getAllBetween(String topLatBound, String botLatBound, String topLngBound, String botLngBound, String keyField) throws IOException {
+        Integer keyColumn = columns.get(keyField);
         List<List<String>> linesToReturn = new ArrayList<>();
         linesToReturn.add(firstLine);
         
@@ -166,24 +176,28 @@ public class TSVBinarySearch {
             }
             
             // see if this line contains query in giveColumn
-            String res = checkLine(topBound, keyColumn);
-            int cmp1 = res.compareTo(topBound);
-            int cmp2 = res.compareTo(botBound);
+            String res = checkLine(topLatBound, keyColumn);
+            int cmp1 = res.compareTo(topLatBound);
+            int cmp2 = res.compareTo(botLatBound);
             // it does
             if (cmp1 == 0) {
                 // get back to the beginning of the line
                 seekToPrevNewLine();
                 // for duplicate keys
                 seekToPrevNewLine();
-                for (String before = checkLine(topBound, keyColumn); (before.compareTo(topBound) >= 0 && before.compareTo(botBound) <= 0); before = checkLine(topBound, keyColumn)) {
+                for (String before = checkLine(topLatBound, keyColumn); (before.compareTo(topLatBound) >= 0 && before.compareTo(botLatBound) <= 0); before = checkLine(topLatBound, keyColumn)) {
                     seekToPrevNewLine();
                     seekToPrevNewLine();
                 }
                 seekToNextNewLine();
                 try {
-                    while (botBound.compareTo(checkLine(botBound, keyColumn)) >= 0) {
+                    while (botLatBound.compareTo(checkLine(botLatBound, keyColumn)) >= 0) {
                         seekToPrevNewLine();
-                        linesToReturn.add(Arrays.asList(readToNextNewLine().trim().split("\t")));
+                        List<String> l = Arrays.asList(readToNextNewLine().trim().split("\t"));
+                        String longi = l.get(columns.get("id")).split("\\.")[1];
+                        if (longi.compareTo(topLngBound) <= 0 && longi.compareTo(botLngBound) >= 0) {
+                            linesToReturn.add(l);
+                        }
                     }
                 } catch (NullPointerException ex) {}
                 return linesToReturn;
@@ -199,6 +213,12 @@ public class TSVBinarySearch {
         return null;
     }
     
+    /**
+     *
+     * @param column
+     * @return
+     * @throws IOException
+     */
     public String getColumnOnFirstLine(String column) throws IOException {
         Integer columnNum = columns.get(column);
         raf.seek(0);
@@ -229,6 +249,12 @@ public class TSVBinarySearch {
         return new String(line, UTF8).trim();
     }
     
+    /**
+     *
+     * @param column
+     * @return
+     * @throws IOException
+     */
     public String getColumnOnLastLine(String column) throws IOException {
         int columnNum = columns.get(column);
         raf.seek(raf.length());

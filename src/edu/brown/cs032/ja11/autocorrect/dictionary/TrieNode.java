@@ -3,29 +3,50 @@ package edu.brown.cs032.ja11.autocorrect.dictionary;
 import java.util.Collection;
 import java.util.HashMap;
 
+/**
+ *
+ * @author Thomas Mercurio
+ */
 public class TrieNode implements TreeSearchable{
 
 	private final char element;
 	private boolean isWordEnd;
 	private final HashMap<Character, TreeSearchable> children;
-	
-	public TrieNode(char element){
+
+    /**
+     *
+     * @param element
+     */
+    public TrieNode(char element){
 		this.element = element;
 		this.isWordEnd = false;
 		this.children = new HashMap<>(26);
 	}
-	
-	@Override
+
+    /**
+     *
+     * @return
+     */
+    @Override
 	public char getElement() {
 		return element;
 	}
 	
+    /**
+     *
+     * @return
+     */
     @Override
 	public boolean isWordEnd(){
 		return isWordEnd;
 	}
 
-	@Override
+    /**
+     *
+     * @param word
+     * @return
+     */
+    @Override
 	public boolean isWord(String word) {
 		TreeSearchable end = searchNode(word);
 		if (end!= null) 
@@ -33,17 +54,30 @@ public class TrieNode implements TreeSearchable{
 		else return false; 
 	}
 
-	@Override
+    /**
+     *
+     * @param element
+     * @return
+     */
+    @Override
 	public TreeSearchable getNode(char element) {
 		return children.get(element);
 	}
 
-	@Override
+    /**
+     *
+     * @return
+     */
+    @Override
 	public Collection<TreeSearchable> getNodes() {
 		return children.values();
 	}
 
-	@Override
+    /**
+     *
+     * @param word
+     */
+    @Override
 	public void addWord(String word) {
 		String toAdd = word;
 		if (word.length()==0) 
@@ -62,7 +96,12 @@ public class TrieNode implements TreeSearchable{
 		
 	}
 
-	@Override
+    /**
+     *
+     * @param route
+     * @return
+     */
+    @Override
 	public TreeSearchable searchNode(String route) {
 		if(route.length()==0){
 			return this;

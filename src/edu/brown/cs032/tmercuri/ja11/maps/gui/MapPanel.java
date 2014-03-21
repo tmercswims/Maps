@@ -35,7 +35,7 @@ public class MapPanel extends JPanel {
 	 */
 	private static final long serialVersionUID = 420L;
 	
-	private Point2D topLeft;
+	private final Point2D topLeft;
 	private Point2D bottomRight;
 	private double scale;
 	private double xOffset;
@@ -45,7 +45,7 @@ public class MapPanel extends JPanel {
 	private PointStatus whichPoint;
 	private MapData mapData;
 	private LatLngToPixel converter;
-	private Collection<MapWay> toDisplay;
+	private final Collection<MapWay> toDisplay;
 	private List<MapWay> pathWay;
 	private boolean hasPath;
 	
@@ -53,7 +53,8 @@ public class MapPanel extends JPanel {
 		P1, P2;
 	}
 	
-	/** Constructor **/
+	/** Constructor
+     * @param manager **/
 	
 	public MapPanel(LayoutManager manager){
 		super(manager);
@@ -66,9 +67,9 @@ public class MapPanel extends JPanel {
 		PointTwo = null;
 		whichPoint = PointStatus.P1;
 		setDoubleBuffered(true);
-		toDisplay = new ArrayList<MapWay>();
+		toDisplay = new ArrayList<>();
 		converter = new LatLngToPixel(40.15, -73.8);
-		pathWay = new ArrayList<MapWay>();
+		pathWay = new ArrayList<>();
 		hasPath = false;
 		
 		Scroller scroller = new Scroller();
@@ -259,9 +260,13 @@ public class MapPanel extends JPanel {
 		}
 
 		//These methods do nothing
+        @Override
 		public void mouseReleased(MouseEvent e) {}
+        @Override
 		public void mouseEntered(MouseEvent e) {}
+        @Override
 		public void mouseExited(MouseEvent e) {}
+        @Override
 		public void mouseMoved(MouseEvent e) {}
 		
 	}
@@ -285,26 +290,43 @@ public class MapPanel extends JPanel {
 		
 	}
 	
-	/** Some getters, for coordinates which have been already converted to lat and lng **/
+	/** Some getters, for coordinates which have been already converted to lat and lng
+     * @return  **/
 	
 	public double getLatPointOne(){
 		 return  (converter.pixelToLat((int) PointOne.getY()));
 	}
-	
-	public double getLngPointOne(){
+
+    /**
+     *
+     * @return
+     */
+    public double getLngPointOne(){
 		return  (converter.pixelToLng((int) PointOne.getY()));
 	}
-	
-	public double getLatPointTwo(){
+
+    /**
+     *
+     * @return
+     */
+    public double getLatPointTwo(){
 		 return  (converter.pixelToLat((int) PointTwo.getY()));
 	}
-	
-	public double getLngPointTwo(){
+
+    /**
+     *
+     * @return
+     */
+    public double getLngPointTwo(){
 		return  (converter.pixelToLng((int) PointTwo.getY()));
 	}
-	
-	
-
-
-
+    
+    /**
+     *
+     * @param path
+     */
+    public void setPath(List<MapWay> path) {
+        this.hasPath = true;
+        this.pathWay = path;
+    }
 }

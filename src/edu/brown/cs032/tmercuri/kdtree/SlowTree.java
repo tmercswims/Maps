@@ -84,6 +84,11 @@ public class SlowTree<T extends Dimension<U>, U> implements KDTree<T, U> {
         return nearest;
     }
     
+    /**
+     *
+     * @param p
+     * @return
+     */
     @Override
     public U findNearestNeighbor(T p) {
         return findNNearestNeighbors(1, true, p).get(0);

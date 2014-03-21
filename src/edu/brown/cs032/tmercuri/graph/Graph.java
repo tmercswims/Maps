@@ -5,7 +5,6 @@
 
 package edu.brown.cs032.tmercuri.graph;
 
-import edu.brown.cs032.tmercuri.ja11.maps.backend.LatLng;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -40,55 +39,97 @@ public class Graph<T> {
         this.previous = new HashMap<>();
     }
     
+    /**
+     * Gets the latitude of this point.
+     * @param p
+     * @return
+     * @throws IOException
+     */
     public double getLat(T p) throws IOException {
         return g.getLat(p);
     }
     
+    /**
+     * Gets the longitude of this node.
+     * @param p
+     * @return
+     * @throws IOException
+     */
     public double getLng(T p) throws IOException {
         return g.getLng(p);
     }
     
+    /**
+     * Gets the ways that cross this node.
+     * @param ID
+     * @return
+     * @throws IOException
+     */
     public List<String> getWaysThatCrossNode(T ID) throws IOException {
         return g.getWaysThatCrossNode(ID);
     }
     
+    /**
+     * Gets the start node of a way.
+     * @param ID
+     * @return
+     * @throws IOException
+     */
     public String getStartOfWay(T ID) throws IOException {
         return g.getStartOfWay(ID);
     }
     
+    /**
+     * Gets the end node of way.
+     * @param ID
+     * @return
+     * @throws IOException
+     */
     public String getEndOfWay(T ID) throws IOException {
         return g.getEndOfWay(ID);
     }
     
+    /**
+     * Gets the name of street.
+     * @param ID
+     * @return
+     * @throws IOException
+     */
     public T getWayName(T ID) throws IOException {
         return g.getStreetName(ID);
     }
     
-    public List<List<String>> getBetweenLats(Double topLat, Double botLat) throws IOException {
-        return g.getBetweenLats(topLat, botLat);
+    /**
+     * Gets every way that has at least one end inside the box whose top left corner is (topLat, topLng) and bottom right corner is (botLat, botLng).
+     * @param topLat
+     * @param botLat
+     * @param topLng
+     * @param botLng
+     * @return
+     * @throws IOException
+     */
+    public List<List<String>> getBetween(Double topLat, Double botLat, Double topLng, Double botLng) throws IOException {
+        return g.getBetween(topLat, botLat, topLng, botLng);
     }
     
-    public LatLng getTopLeft() throws IOException {
-        return g.getTopLeftPoint();
-    }
-    
-    public LatLng getBotRight() throws IOException {
-        return g.getBotRightPoint();
-    }
-    
+    /**
+     * Finds the node of the intersection of street and crossStreet.
+     * @param street
+     * @param crossStreet
+     * @return
+     * @throws IOException
+     */
     public String findIntersection(T street, T crossStreet) throws IOException {
         List<String> nodesOnStreet = g.getNodesOnStreet(street);
         List<String> nodesOnCrossStreet = g.getNodesOnStreet(crossStreet);
         
         // intersect the two lists
-        for (int i = nodesOnStreet.size() - 1; i > -1; --i){
+        for (int i = nodesOnStreet.size() - 1; i > -1; i--) {
             String str = nodesOnStreet.get(i);
             if (!nodesOnCrossStreet.remove(str)) {
                 nodesOnStreet.remove(str);
             }
         }
-        
-        System.out.println("Number of intersections: " + nodesOnStreet.size());
         
         return nodesOnStreet.get(0);
     }
@@ -196,6 +237,13 @@ public class Graph<T> {
         }
     }
     
+    /**
+     * Returns the shortest path, instead of printing it.
+     * @param targetID
+     * @param sourceID
+     * @return
+     * @throws IOException
+     */
     public List<List<T>> returnShortestPathToFromA(final T targetID, final T sourceID) throws IOException {
         final List<T> edges = new ArrayList<>();
         final List<T> nodes = new ArrayList<>();

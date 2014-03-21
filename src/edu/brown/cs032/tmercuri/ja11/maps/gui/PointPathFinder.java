@@ -7,13 +7,14 @@ import java.util.List;
 import javax.swing.SwingUtilities;
 
 /**
- * A runnable that can find a path, and then tells the map to display it.
+ *
+ * @author Thomas Mercurio
  */
-public class PathFinder implements Runnable {
+public class PointPathFinder implements Runnable {
     
     private final MapData map;
     private final MapPanel mp;
-    private final String s1, cs1, s2, cs2;
+    private final double s1, cs1, s2, cs2;
     
     /**
      *
@@ -24,13 +25,13 @@ public class PathFinder implements Runnable {
      * @param s2
      * @param cs2
      */
-    public PathFinder(MapData map, MapPanel mp, String s1, String cs1, String s2, String cs2) {
+    public PointPathFinder(MapData map, MapPanel mp, double s1, double cs1, double s2, double cs2) {
         this.map = map;
-        this.mp = mp;
         this.s1 = s1;
         this.cs1 = cs1;
         this.s2 = s2;
         this.cs2 = cs2;
+        this.mp = mp;
     }
 
     @Override
@@ -51,4 +52,5 @@ public class PathFinder implements Runnable {
             System.err.println("ERROR: " + ex.getMessage());
         }
     }
+    
 }

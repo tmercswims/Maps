@@ -16,13 +16,20 @@ import edu.brown.cs032.ja11.autocorrect.searcher.Searcher;
 import edu.brown.cs032.ja11.autocorrect.searcher.WhiteSpaceSearcher;
 import edu.brown.cs032.tmercuri.TSV.TSVReader;
 
+/**
+ *
+ * @author Thomas Mercurio
+ */
 public class Autocorrecter {
 	
 	Engine engine;
 	String filepath;
-	
-	
-	public Autocorrecter(String filepath){
+
+    /**
+     *
+     * @param filepath
+     */
+    public Autocorrecter(String filepath){
 		Vocab vocab = new Vocab();
 		this.filepath = filepath;
 		try{
@@ -44,8 +51,13 @@ public class Autocorrecter {
 			System.out.println("ERROR: IO exception in reading names of roads");
 		}
 	}
-	
-	public List<String> getResults(String input){
+
+    /**
+     *
+     * @param input
+     * @return
+     */
+    public List<String> getResults(String input){
 		return engine.getTopFiveResults(input);
 	}
 }

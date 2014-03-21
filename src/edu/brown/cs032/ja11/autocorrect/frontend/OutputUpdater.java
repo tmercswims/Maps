@@ -8,13 +8,23 @@ import javax.swing.JTextField;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
+/**
+ *
+ * @author Thomas Mercurio
+ */
 public class OutputUpdater implements DocumentListener {
 	
 	JTextField input;
 	JTextArea output;
 	Engine engine;
-	
-	public OutputUpdater(JTextField input, JTextArea output, Engine engine){
+
+    /**
+     *
+     * @param input
+     * @param output
+     * @param engine
+     */
+    public OutputUpdater(JTextField input, JTextArea output, Engine engine){
 		this.input = input;
 		this.output = output;
 		this.engine = engine;
@@ -24,7 +34,11 @@ public class OutputUpdater implements DocumentListener {
 	public void changedUpdate(DocumentEvent e) {
 		updateOutput();
 	}
-	public void updateOutput(){
+
+    /**
+     *
+     */
+    public void updateOutput(){
 		output.setText("");
 		String line = input.getText();
 		Collection<String> results;

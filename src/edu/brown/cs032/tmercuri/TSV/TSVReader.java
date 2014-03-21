@@ -24,6 +24,12 @@ public class TSVReader implements AutoCloseable {
     private final String filename;
     private final Map<String, Integer> columns;
     
+    /**
+     *
+     * @param filename
+     * @throws FileNotFoundException
+     * @throws IOException
+     */
     public TSVReader(String filename) throws FileNotFoundException, IOException {
         this.file = new Scanner(new File(filename), "UTF-8");
         this.filename = filename;
@@ -50,6 +56,12 @@ public class TSVReader implements AutoCloseable {
         return map;
     }
     
+    /**
+     *
+     * @param columnName
+     * @return
+     * @throws FileNotFoundException
+     */
     public List<String> getAllEntriesInColumn(String columnName) throws FileNotFoundException {
         List<String> list = new ArrayList<>();
         

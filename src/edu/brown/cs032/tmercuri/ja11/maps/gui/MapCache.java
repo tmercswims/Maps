@@ -11,6 +11,10 @@ import java.util.concurrent.TimeUnit;
 
 import edu.brown.cs032.tmercuri.ja11.maps.backend.MapData;
 
+/**
+ *
+ * @author Thomas Mercurio
+ */
 public class MapCache {
 	
 	

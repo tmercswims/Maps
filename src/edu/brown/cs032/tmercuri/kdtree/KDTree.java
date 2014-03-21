@@ -24,6 +24,11 @@ public interface KDTree<T extends Dimension<U>, U> {
      */
     List<U> findNNearestNeighbors(int n, boolean includeGivenPoint, T p);
     
+    /**
+     *
+     * @param p
+     * @return
+     */
     U findNearestNeighbor(T p);
     
     /**

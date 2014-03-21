@@ -91,7 +91,6 @@ public class MapData {
             Double startLng = graph.getLng(fileLine.get(startIndex));
             Double endLng = graph.getLng(fileLine.get(endIndex));
             if ((startLng > topLng && startLng < botLng) || (endLng > topLng && endLng < botLng)) {
-                //System.out.println("found one");
                 mapWays.add(new MapWay(fileLine.get(idIndex), fileLine.get(startIndex), graph.getLat(fileLine.get(startIndex)), startLng, fileLine.get(endIndex), graph.getLat(fileLine.get(endIndex)), endLng, fileLine.get(nameIndex)));
             }
         }
@@ -100,7 +99,7 @@ public class MapData {
     }
     
     /**
-     * Uses the kdtree to find the nearest point to (lat lng).
+     * Uses the kdtree to find the nearest point to (lat, lng).
      * @param lat
      * @param lng
      * @return

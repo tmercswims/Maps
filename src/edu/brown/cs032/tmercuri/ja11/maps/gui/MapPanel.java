@@ -21,6 +21,7 @@ import java.util.List;
 import javax.swing.JPanel;
 
 import edu.brown.cs032.tmercuri.ja11.maps.backend.MapData;
+import java.util.concurrent.Executor;
 
 
 /** 
@@ -48,15 +49,17 @@ public class MapPanel extends JPanel {
 	private final Collection<MapWay> toDisplay;
 	private List<MapWay> pathWay;
 	private boolean hasPath;
+    private final Executor pool;
 	
 	private enum PointStatus{
 		P1, P2;
 	}
 	
 	/** Constructor
-     * @param manager **/
+     * @param manager
+     * @param pool **/
 	
-	public MapPanel(LayoutManager manager){
+	public MapPanel(LayoutManager manager, Executor pool){
 		super(manager);
 		topLeft = new Point2D.Double(0, 0);
 		bottomRight = new Point2D.Double();
@@ -71,6 +74,7 @@ public class MapPanel extends JPanel {
 		converter = new LatLngToPixel(40.15, -73.8);
 		pathWay = new ArrayList<>();
 		hasPath = false;
+        this.pool = pool;
 		
 		Scroller scroller = new Scroller();
 		addMouseListener(scroller);
@@ -148,16 +152,20 @@ public class MapPanel extends JPanel {
 	}
 	
 	/**
-	 * requestSquare(): updates the screen to visualise everything within the bounds of the panel
+	 * requestSquare(): updates the screen to visualize everything within the bounds of the panel
 	 */
 	private void requestSquare(){
-		try {
-			toDisplay.addAll(mapData.getAllBetween(converter.pixelToLat((int) topLeft.getY()), converter.pixelToLng((int) topLeft.getX()), converter.pixelToLat((int)bottomRight.getY()), converter.pixelToLng((int) bottomRight.getX())));
-			repaint();
-		} catch (IOException e) {
-			System.out.println("ERROR: reading map");
-		} 
+        pool.execute(new SquareDrawer(this, mapData, converter.pixelToLat((int) topLeft.getY()), converter.pixelToLng((int) topLeft.getX()), converter.pixelToLat((int)bottomRight.getY()), converter.pixelToLng((int) bottomRight.getX())));
 	}
+    
+    /**
+     * Adds new ways to this map.
+     * @param newWays 
+     */
+    public void addWays(List<MapWay> newWays) {
+        this.toDisplay.addAll(newWays);
+        repaint();
+    }
 	
 	/**
 	 * 
@@ -322,11 +330,12 @@ public class MapPanel extends JPanel {
 	}
     
     /**
-     *
+     * Sets a path to display.
      * @param path
      */
     public void setPath(List<MapWay> path) {
         this.hasPath = true;
         this.pathWay = path;
+        repaint();
     }
 }

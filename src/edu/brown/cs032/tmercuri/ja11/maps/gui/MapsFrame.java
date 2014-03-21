@@ -46,7 +46,7 @@ public class MapsFrame extends JFrame {
         super("Maps");
         this.map = map;
         this.mapWays = new HashMap<>();
-        mainPanel = new MapPanel(new BorderLayout());
+        mainPanel = new MapPanel(new BorderLayout(), pool);
         createAndShowGUI();
     }
     

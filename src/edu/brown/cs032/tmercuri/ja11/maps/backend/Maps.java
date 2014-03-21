@@ -65,7 +65,7 @@ public class Maps {
     
     private static void commandLineInterface(MapData map) throws IOException {
         Scanner s = new Scanner(System.in);
-        while(s.hasNextLine()) {
+        while (s.hasNextLine()) {
             String line = s.nextLine().replaceAll("\\s+", " ");
             // got an empty line
             if (line.equals(" ") || line.equals("")) {

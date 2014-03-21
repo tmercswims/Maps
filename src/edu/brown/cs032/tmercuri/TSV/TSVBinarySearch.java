@@ -123,6 +123,7 @@ public class TSVBinarySearch {
                 while (query.equals(checkLine(query, giveColumn))) {
                     toRet += getWant(wantColumn);
                     toRet += ",";
+                    seekToPrevNewLine();
                     seekToNextNewLine();
                 }
                 return toRet.substring(0, toRet.length() - 1);

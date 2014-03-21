@@ -10,3 +10,46 @@ Thomas Mercurio, tmercuri
 Jonathan Adam, ja11
 CSCI0320, Spring 2014
 
+PREVIOUS PROJECTS
+	tmercuri's Stars and Bacon were used, and ja11's Autocorrect was used
+
+DESIGN
+	The main data class is MapData, which contains everything integral to the operation of the map,
+	such as the graph, the KD-tree, and the autocorrect.
+
+	The graph search uses a modified A* search to find the shortest path, and the KD-tree is used
+	to find nearest-neighbors when the inputs of a search are points before the graph is brought
+	into play.
+
+	For the command-line, the program simply instantiates a MapData with the given files, and then
+	uses it to run searches, printing the results for each query.
+
+	The GUI is based on a MapData as well, but uses a graphical front-end to access it. Four textfields
+	are used to get streets and cross streets, as well as clocking on the map to get directions from
+	the first clocked point to the second. The GUI uses extra MapData methods to access the graph
+	in order to get Ways so that it can draw them.
+
+	Whenever the GUI needs to do a path search, it uses the threads of an Executor to accomplish the
+	task. Additionally, the GUI uses Executor threads for bringing in more points to draw as the
+	user pans the view around.
+
+OPTIMIZATIONS
+	None.
+
+TESTING
+	You can run our system tests by running the command 'ant my_system_test' from the root directory.
+	However, it seems that the testing script times out on our tests, because when it is run, it
+	informs me that it got no output, but if I run the exact same arguments and input, I get the
+	output that I was expecting. I do not know why this is or how to fix it.
+
+	To be sure that our tests were accurate, we traced a path through the given data files, and then
+	ran path searches on those points, making sure that the output path was what we expected it to be.
+
+BUILDING
+	To build, run 'ant'. To run, use 'bin/maps [--gui] <ways> <nodes> <index>'
+
+BUGS
+	Put simply, our GUI does not work. It is not complete, and does not function well. It can open an
+	intial view, it can be panned and zoomed, but that is about it. Our command line interface works
+	perfectly, but the GUI is far from perfect. We plan to have it complete and working for traffic, but
+	for now that is it.

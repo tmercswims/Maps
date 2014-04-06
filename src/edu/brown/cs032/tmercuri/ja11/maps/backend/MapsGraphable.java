@@ -121,7 +121,7 @@ public class MapsGraphable implements Graphable<String> {
      */
     @Override
     public List<List<String>> getBetween(Double topLat, Double botLat, Double topLng, Double botLng) throws IOException {
-        return ways.getAllBetween("/w/"+topLat.toString().replaceAll("\\.", "").substring(0, 4), "/w/"+botLat.toString().replaceAll("\\.", "").substring(0, 4), topLng.toString().replaceAll("\\.", "").replaceAll("-", "").substring(0, 4), botLng.toString().replaceAll("\\.", "").replaceAll("-", "").substring(0, 4), "id");
+        return ways.getAllBetween("/w/"+topLat.toString().replaceAll("\\.", "").replaceAll("-", "").substring(0, 4)+"."+botLng.toString().replaceAll("\\.", "").replaceAll("-", "").substring(0, 4), "/w/"+botLat.toString().replaceAll("\\.", "").replaceAll("-", "").substring(0, 4)+"."+topLng.toString().replaceAll("\\.", "").replaceAll("-", "").substring(0, 4), "id");
     }
 
     /**

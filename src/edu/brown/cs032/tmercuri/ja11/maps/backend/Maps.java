@@ -56,7 +56,7 @@ public class Maps {
             } else {
                 commandLineInterface(map);
             }
-       } catch (IOException | RuntimeException ex) {
+       } catch (IOException /*| RuntimeException*/ ex) {
             System.err.println("ERROR: " + ex.getMessage());
         }
     }

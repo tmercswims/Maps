@@ -12,6 +12,8 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.net.URL;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -157,16 +159,16 @@ public class MapsFrame extends JFrame {
         //setResizable(false);
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         
-        List<Image> icons = new ArrayList<>();
+        /*List<Image> icons = new ArrayList<>();
         URL iconURL = getClass().getResource("/edu/brown/cs032/tmercuri/ja11/maps/gui/icon16.png");
         icons.add(new ImageIcon(iconURL).getImage());
-        iconURL = getClass().getResource("/edu/brown/cs032/tmercuri/ja11/maps/gui/icon32.png");
+        iconURL = getClass().getResource("/src/edu/brown/cs032/tmercuri/ja11/maps/gui/icon32.png");
         icons.add(new ImageIcon(iconURL).getImage());
-        iconURL = getClass().getResource("/edu/brown/cs032/tmercuri/ja11/maps/gui/icon64.png");
+        iconURL = getClass().getResource("/src/edu/brown/cs032/tmercuri/ja11/maps/gui/icon64.png");
         icons.add(new ImageIcon(iconURL).getImage());
-        iconURL = getClass().getResource("/edu/brown/cs032/tmercuri/ja11/maps/gui/icon128.png");
+        iconURL = getClass().getResource("/src/edu/brown/cs032/tmercuri/ja11/maps/gui/icon128.png");
         icons.add(new ImageIcon(iconURL).getImage());
-        setIconImages(icons);
+        setIconImages(icons);*/
 
         setLocationRelativeTo(null);
         setVisible(true);

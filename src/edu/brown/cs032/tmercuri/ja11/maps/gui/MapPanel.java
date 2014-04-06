@@ -197,7 +197,7 @@ public class MapPanel extends JPanel {
 	 * @author ja11
 	 *
 	 */
-	private class Scroller implements MouseListener, MouseMotionListener{
+	private class Scroller implements MouseListener, MouseMotionListener {
 		private int initialX;
 		private int initialY;
 		
@@ -285,13 +285,13 @@ public class MapPanel extends JPanel {
 	 * @author ja11
 	 *
 	 */
-	private class Scaler implements MouseWheelListener{
+	private class Scaler implements MouseWheelListener {
 
 		@Override
 		public void mouseWheelMoved(MouseWheelEvent e) {
 			if(e.getScrollType() == MouseWheelEvent.WHEEL_UNIT_SCROLL){
-				scale -= (0.1* e.getWheelRotation());
-				scale = Math.max(0.0000001, scale);
+				scale -= (0.001* e.getWheelRotation());
+				scale = Math.max(0.00001, scale);
 				repaint();
 				requestSquare();
 			}

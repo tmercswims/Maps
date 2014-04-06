@@ -90,9 +90,7 @@ public class MapData {
         for (List<String> fileLine : wayFileLines) {
             Double startLng = graph.getLng(fileLine.get(startIndex));
             Double endLng = graph.getLng(fileLine.get(endIndex));
-            if ((startLng > topLng && startLng < botLng) || (endLng > topLng && endLng < botLng)) {
-                mapWays.add(new MapWay(fileLine.get(idIndex), fileLine.get(startIndex), graph.getLat(fileLine.get(startIndex)), startLng, fileLine.get(endIndex), graph.getLat(fileLine.get(endIndex)), endLng, fileLine.get(nameIndex)));
-            }
+            mapWays.add(new MapWay(fileLine.get(idIndex), fileLine.get(startIndex), graph.getLat(fileLine.get(startIndex)), startLng, fileLine.get(endIndex), graph.getLat(fileLine.get(endIndex)), endLng, fileLine.get(nameIndex)));
         }
         
         return mapWays;

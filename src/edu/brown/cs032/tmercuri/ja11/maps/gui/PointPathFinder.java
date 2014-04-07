@@ -39,10 +39,11 @@ public class PointPathFinder implements Runnable {
         List<List<String>> path;
         try {
             path = map.getPath(s1, cs1, s2, cs2);
+            System.out.println(path);
             List<String> ways = path.get(0);
-            
-            List<MapWay> mapWays = map.wayIDsToMapWays(ways);
-            
+          //  System.out.println(ways);
+            List<MapWay> mapWays = map.wayIDsToMapWays(ways.subList(1, ways.size()));
+           // System.out.println(mapWays);
             for (MapWay mw : mapWays) {
                 mw.setColor(Color.blue);
             }

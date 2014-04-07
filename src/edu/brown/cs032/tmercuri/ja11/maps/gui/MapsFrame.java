@@ -69,6 +69,10 @@ public class MapsFrame extends JFrame {
                 if (!one.getText().equals("") && !two.getText().equals("") && !three.getText().equals("") && !four.getText().equals("")) {
                     pool.execute(new PathFinder(map, mainPanel, one.getText(), two.getText(), three.getText(), four.getText()));
                 }
+                else{
+                	System.out.println(" we are now finding points");
+                	pool.execute(new PointPathFinder(map, mainPanel, mainPanel.getLatPointOne(), mainPanel.getLngPointOne(), mainPanel.getLatPointTwo(), mainPanel.getLngPointTwo()));
+                }
             }
         };
         

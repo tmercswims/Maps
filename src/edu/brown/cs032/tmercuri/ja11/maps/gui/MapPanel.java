@@ -1,10 +1,13 @@
 package edu.brown.cs032.tmercuri.ja11.maps.gui;
 
 import edu.brown.cs032.tmercuri.ja11.maps.backend.LatLng;
+
+import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.LayoutManager;
+import java.awt.RenderingHints;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
@@ -112,7 +115,7 @@ public class MapPanel extends JPanel {
 	@Override
 	public void paint(Graphics g){
 		super.paint(g);
-		// Deals with the transformations by scroling
+		// Deals with the transformations by scrolling
 		AffineTransform transformer = new AffineTransform();
 		transformer.translate(xOffset, yOffset);
 		transformer.scale(scale, scale);
@@ -189,7 +192,10 @@ public class MapPanel extends JPanel {
 	 */
 	private void drawMapWay(Graphics2D graphics, MapWay way){
 		way.convert(converter);
+		graphics.setStroke(new BasicStroke(4));
+		graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 		graphics.drawLine(way.getStartPixelX(), way.getStartPixelY(), way.getEndPixelX(), way.getEndPixelY());
+		
 	}
 	
 	/***
@@ -235,8 +241,9 @@ public class MapPanel extends JPanel {
 								break;
 							}
 						}
-					System.out.println("coordinates are "+ actualPos.getX()+ ", "+ actualPos.getY());
 				}
+				System.out.println("P1 lat " + getLatPointOne() + " lng "+ getLngPointOne());
+				System.out.println("P2 lat " + getLatPointTwo() + " lng " + getLngPointTwo());
 				repaint();
 			} catch (NoninvertibleTransformException e1) {
 				System.out.println("ERROR: NonInvertible");
@@ -303,7 +310,9 @@ public class MapPanel extends JPanel {
      * @return  **/
 	
 	public double getLatPointOne(){
+		if (PointOne!=null)
 		 return  (converter.pixelToLat((int) PointOne.getY()));
+		else return 0;
 	}
 
     /**
@@ -311,7 +320,9 @@ public class MapPanel extends JPanel {
      * @return
      */
     public double getLngPointOne(){
+    	if (PointOne != null)
 		return  (converter.pixelToLng((int) PointOne.getY()));
+    	else return 0;
 	}
 
     /**
@@ -319,7 +330,9 @@ public class MapPanel extends JPanel {
      * @return
      */
     public double getLatPointTwo(){
+    	if (PointTwo != null)
 		 return  (converter.pixelToLat((int) PointTwo.getY()));
+    	else return 0;
 	}
 
     /**
@@ -327,7 +340,9 @@ public class MapPanel extends JPanel {
      * @return
      */
     public double getLngPointTwo(){
+    	if (PointTwo != null)
 		return  (converter.pixelToLng((int) PointTwo.getY()));
+    	else return 0;
 	}
     
 
@@ -339,7 +354,6 @@ public class MapPanel extends JPanel {
     public void setPath(List<MapWay> path) {
         this.hasPath = true;
         this.pathWay = path;
-        System.out.println("the path is now set");
         repaint();
     }
 

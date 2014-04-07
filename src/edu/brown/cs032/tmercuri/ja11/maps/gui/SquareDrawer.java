@@ -29,7 +29,7 @@ public class SquareDrawer implements Runnable {
         try {
             newWays = map.getAllBetween(tlLat, tlLng, brLat, brLng);
         } catch (IOException ex) {
-            System.err.println("ERROR: " + ex.getMessage());
+            System.err.println("ERROR: in the Squaredrawer" + ex.getMessage());
         }
         SwingUtilities.invokeLater(new PointAdder(mp, newWays));
     }

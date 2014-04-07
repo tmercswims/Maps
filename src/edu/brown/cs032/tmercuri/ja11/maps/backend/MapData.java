@@ -48,7 +48,8 @@ public class MapData {
         String inter1 = graph.findIntersection(st1, cst1);
         String inter2 = graph.findIntersection(st2, cst2);
         graph.computePathA(inter1, inter2);
-        return graph.returnShortestPathToFromA(inter2, inter1);
+        List<List<String>> result = graph.returnShortestPathToFromA(inter2, inter1);
+        return result;
     }
     
     /**

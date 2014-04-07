@@ -330,6 +330,8 @@ public class MapPanel extends JPanel {
 		return  (converter.pixelToLng((int) PointTwo.getY()));
 	}
     
+
+    
     /**
      * Sets a path to display.
      * @param path
@@ -337,6 +339,15 @@ public class MapPanel extends JPanel {
     public void setPath(List<MapWay> path) {
         this.hasPath = true;
         this.pathWay = path;
+        System.out.println("the path is now set");
         repaint();
     }
+
+	public double getAnchorX() {
+		return xOffset;
+	}
+
+	public double getAnchorY() {
+		return yOffset;
+	}
 }

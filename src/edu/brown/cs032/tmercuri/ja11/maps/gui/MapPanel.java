@@ -78,6 +78,7 @@ public class MapPanel extends JPanel {
 		pathWay = new ArrayList<>();
 		hasPath = false;
         this.pool = pool;
+        setBackground(Color.DARK_GRAY);
 		
 		Scroller scroller = new Scroller();
 		addMouseListener(scroller);
@@ -122,17 +123,17 @@ public class MapPanel extends JPanel {
 		Graphics2D g2d = (Graphics2D) g;
 		g2d.setTransform(transformer);
 		// First draws the normal ways
-		g2d.setColor(Color.BLACK);
+		g2d.setColor(Color.LIGHT_GRAY);
 		for (MapWay way : toDisplay){
 			drawMapWay(g2d, way);
 		}
 		// Draws any points drawn by the user
 		g2d.setColor(Color.RED);
 		if (PointOne!= null){
-			g2d.drawOval((int)PointOne.getX(), (int)PointOne.getY(), 5, 5);
+			g2d.drawOval((int)PointOne.getX(), (int)PointOne.getY(), 8, 8);
 			if (PointTwo != null){
-				g2d.setColor(Color.DARK_GRAY);
-				g2d.drawOval((int) PointTwo.getX(), (int)PointTwo.getY(), 5, 5);
+				g2d.setColor(Color.BLUE);
+				g2d.drawOval((int) PointTwo.getX(), (int)PointTwo.getY(), 8, 8);
 			}
 		}
 		// Sketches out the path if there is one

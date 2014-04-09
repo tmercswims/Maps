@@ -2,6 +2,7 @@ package edu.brown.cs032.tmercuri.ja11.maps.gui;
 
 import edu.brown.cs032.tmercuri.ja11.maps.backend.LatLng;
 
+
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics;
@@ -19,7 +20,9 @@ import java.awt.geom.Point2D;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.swing.JPanel;
 
@@ -39,8 +42,7 @@ public class MapPanel extends JPanel {
 	 */
 	private static final long serialVersionUID = 420L;
 	
-	private final Point2D topLeft;
-	private Point2D bottomRight;
+	public Point2D center;
 	private double scale;
 	private double xOffset;
 	private double yOffset;
@@ -49,7 +51,8 @@ public class MapPanel extends JPanel {
 	private PointStatus whichPoint;
 	private MapData mapData;
 	private LatLngToPixel converter;
-	private final Collection<MapWay> toDisplay;
+	private MapCache cache;
+	private final Map<MapWay, Double> toDisplay;
 	private List<MapWay> pathWay;
 	private boolean hasPath;
     private final Executor pool;
@@ -64,8 +67,7 @@ public class MapPanel extends JPanel {
 	
 	public MapPanel(LayoutManager manager, Executor pool){
 		super(manager);
-		topLeft = new Point2D.Double(0, 0);
-		bottomRight = new Point2D.Double();
+		center = new Point2D.Double(0, 0);
 		scale = 1;
 		xOffset  = 0;
 		yOffset = 0;
@@ -73,10 +75,11 @@ public class MapPanel extends JPanel {
 		PointTwo = null;
 		whichPoint = PointStatus.P1;
 		setDoubleBuffered(true);
-		toDisplay = new ArrayList<>();
+		toDisplay = new HashMap<MapWay, Double>();
 		converter = new LatLngToPixel(40.15, -73.8);
-		pathWay = new ArrayList<>();
+		pathWay = new ArrayList<MapWay>();
 		hasPath = false;
+		this.cache = null;
         this.pool = pool;
         setBackground(Color.DARK_GRAY);
 		
@@ -84,6 +87,8 @@ public class MapPanel extends JPanel {
 		addMouseListener(scroller);
 		addMouseMotionListener(scroller);
 		addMouseWheelListener(new Scaler());	
+		
+
 	}
 	
 	/**
@@ -93,18 +98,17 @@ public class MapPanel extends JPanel {
 	public void setMap (MapData mapData){
 		this.mapData = mapData;
 
+
 		try {
 			// Default: CIT
 			LatLng point = mapData.getNearestPoint(41.827404, -71.399323);
 			double initialLat = point.getLat();
 			double initialLng = point.getLng();
-            converter = new LatLngToPixel(point.getLat(), point.getLng());
+	        converter = new LatLngToPixel(point.getLat(), point.getLng());
+	        centerOnPoint(converter.LngToPixel(initialLng), converter.LatToPixel(initialLat));
             // Find the roads
-            toDisplay.addAll(mapData.getAllBetween(initialLat + converter.pixelToLatDistance(getHeight()), 
-						initialLng - converter.pixelToLngDistance(getWidth()), initialLat - converter.pixelToLatDistance(getHeight()), initialLng + converter.pixelToLngDistance(getWidth())));
-           // Display roads
-            centerOnPoint(converter.LngToPixel(initialLng), converter.LatToPixel(initialLat));
-           repaint();
+			this.cache = new MapCache(mapData, this);         
+			repaint();
         } catch (IOException e) {
 			System.out.println("ERROR: problem with IO");
         }
@@ -118,13 +122,15 @@ public class MapPanel extends JPanel {
 		super.paint(g);
 		// Deals with the transformations by scrolling
 		AffineTransform transformer = new AffineTransform();
-		transformer.translate(xOffset, yOffset);
+		
+		transformer.translate(getWidth()/2, getHeight()/2);
 		transformer.scale(scale, scale);
+		transformer.translate(xOffset, yOffset);
 		Graphics2D g2d = (Graphics2D) g;
 		g2d.setTransform(transformer);
 		// First draws the normal ways
 		g2d.setColor(Color.LIGHT_GRAY);
-		for (MapWay way : toDisplay){
+		for (MapWay way : toDisplay.keySet()){
 			drawMapWay(g2d, way);
 		}
 		// Draws any points drawn by the user
@@ -145,9 +151,7 @@ public class MapPanel extends JPanel {
 		}
 		try {
 			AffineTransform inverted = transformer.createInverse();
-			bottomRight = new Point2D.Double(getWidth(), getHeight());
-			inverted.transform(topLeft, topLeft);
-			inverted.transform(bottomRight, bottomRight);
+			inverted.transform(center, center);
 		} catch (NoninvertibleTransformException e) {
 			System.out.println("ERROR: Noninvertible");
 		}
@@ -155,19 +159,15 @@ public class MapPanel extends JPanel {
 		
 	}
 	
-	/**
-	 * requestSquare(): updates the screen to visualize everything within the bounds of the panel
-	 */
-	private void requestSquare(){
-        pool.execute(new SquareDrawer(this, mapData, converter.pixelToLat((int) topLeft.getY()), converter.pixelToLng((int) topLeft.getX()), converter.pixelToLat((int)bottomRight.getY()), converter.pixelToLng((int) bottomRight.getX())));
-	}
-    
+	
     /**
      * Adds new ways to this map.
      * @param newWays 
      */
     public void addWays(List<MapWay> newWays) {
-        this.toDisplay.addAll(newWays);
+        for (MapWay way : newWays){
+        	toDisplay.put(way, 1.0);
+        }
         repaint();
     }
 	
@@ -183,6 +183,7 @@ public class MapPanel extends JPanel {
 		xOffset = (xSize /2) + x;
 		yOffset = (ySize / 2) + y;
 		scale = 1;
+		center.setLocation(x, y);
 		repaint();
 	}
 	
@@ -262,11 +263,15 @@ public class MapPanel extends JPanel {
 
 		@Override
 		public void mouseDragged(MouseEvent e) {
-			int newX = e.getX() - initialX;
-			int newY = e.getY() - initialY;
 			
-			initialX += newX;
-			initialY += newY;
+			Point2D previousPoint = getTranslatedPoint(initialX, initialY);
+			Point2D newPoint = getTranslatedPoint(e.getX(), e.getY());
+			
+			double newX = newPoint.getX() - previousPoint.getX();
+			double newY = newPoint.getY() - previousPoint.getY();
+			
+			initialX = e.getX();
+			initialY = e.getY();
 			
 			xOffset += newX;
 			yOffset += newY;
@@ -274,11 +279,23 @@ public class MapPanel extends JPanel {
 			repaint();
 		}
 
+		private Point2D getTranslatedPoint(double x, double y){
+			AffineTransform currTransform = new AffineTransform();
+			currTransform.translate(getWidth() /2 , getHeight()/2);
+			currTransform.scale(scale, scale);
+			currTransform.translate(xOffset, yOffset);
+			
+			try{
+				return currTransform.inverseTransform(new Point2D.Double(x, y), null);
+			}
+			catch (NoninvertibleTransformException e){
+				System.out.println("ERROR: the inverted ttransform in the mouse thing wasn't invertible");
+				return null;
+			}
+		}
 		//These methods do nothing
         @Override
-		public void mouseReleased(MouseEvent e) {
-			requestSquare();
-        }
+		public void mouseReleased(MouseEvent e) {}
         @Override
 		public void mouseEntered(MouseEvent e) {}
         @Override
@@ -301,7 +318,6 @@ public class MapPanel extends JPanel {
 				scale -= (0.001* e.getWheelRotation());
 				scale = Math.max(0.00001, scale);
 				repaint();
-				requestSquare();
 			}
 		}
 		
@@ -364,5 +380,13 @@ public class MapPanel extends JPanel {
 
 	public double getAnchorY() {
 		return yOffset;
+	}
+	
+    public LatLngToPixel getConverter(){
+    	return converter;
+    }
+
+	public Point2D getCenter() {
+		return center;
 	}
 }

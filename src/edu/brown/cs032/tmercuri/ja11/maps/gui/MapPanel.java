@@ -27,6 +27,8 @@ import java.util.Map;
 import javax.swing.JPanel;
 
 import edu.brown.cs032.tmercuri.ja11.maps.backend.MapData;
+
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executor;
 
 
@@ -75,7 +77,7 @@ public class MapPanel extends JPanel {
 		PointTwo = null;
 		whichPoint = PointStatus.P1;
 		setDoubleBuffered(true);
-		toDisplay = new HashMap<MapWay, Double>();
+		toDisplay = new ConcurrentHashMap<MapWay, Double>();
 		converter = new LatLngToPixel(40.15, -73.8);
 		pathWay = new ArrayList<MapWay>();
 		hasPath = false;
@@ -87,7 +89,6 @@ public class MapPanel extends JPanel {
 		addMouseListener(scroller);
 		addMouseMotionListener(scroller);
 		addMouseWheelListener(new Scaler());	
-		
 
 	}
 	
@@ -109,6 +110,10 @@ public class MapPanel extends JPanel {
             // Find the roads
 			this.cache = new MapCache(mapData, this);         
 			repaint();
+			
+			while (true){
+				cache.monitor();
+			}
         } catch (IOException e) {
 			System.out.println("ERROR: problem with IO");
         }
@@ -142,6 +147,8 @@ public class MapPanel extends JPanel {
 				g2d.drawOval((int) PointTwo.getX(), (int)PointTwo.getY(), 8, 8);
 			}
 		}
+		g2d.setColor(Color.GREEN);
+		g2d.drawOval((int) center.getX(), (int)center.getY(), 10, 10);
 		// Sketches out the path if there is one
 		if (hasPath){
 			g2d.setColor(Color.MAGENTA);
@@ -149,12 +156,7 @@ public class MapPanel extends JPanel {
 				drawMapWay(g2d, way);
 			}
 		}
-		try {
-			AffineTransform inverted = transformer.createInverse();
-			inverted.transform(center, center);
-		} catch (NoninvertibleTransformException e) {
-			System.out.println("ERROR: Noninvertible");
-		}
+
 		
 		
 	}
@@ -188,11 +190,8 @@ public class MapPanel extends JPanel {
 	 * @param y, the y-coordinate of the point to be in the middle of the panel
 	 */
 	private void centerOnPoint(int x, int y){
-		System.out.println("Centering on "+ x+ ", "+ y);
-		int xSize = getWidth();
-		int ySize = getHeight();
-		xOffset = (xSize /2) + x;
-		yOffset = (ySize / 2) + y;
+		xOffset = x;
+		yOffset = y;
 		scale = 1;
 		center.setLocation(x, y);
 		repaint();
@@ -232,15 +231,14 @@ public class MapPanel extends JPanel {
 		@Override
 		public void mouseClicked(MouseEvent e) {
 			Graphics2D g2d = (Graphics2D) getGraphics();
-			try {
+
 				AffineTransform transformNow = new AffineTransform();
 				transformNow.translate(xOffset, yOffset);
 				transformNow.scale(scale, scale);
-				AffineTransform inverse = transformNow.createInverse();
+				transformNow.transform(center, center);
 				if (e.getClickCount() == 2){
-					//Point2D mousePos = new Point2D.Double(e.getX(), e.getY());
-					Point2D actualPos = getTranslatedPoint(e.getX(), e.getY());//new Point2D.Double();
-					//inverse.transform(mousePos, actualPos);
+					Point2D actualPos = getTranslatedPoint(e.getX(), e.getY());
+					
 					switch (whichPoint){
 						case P1: { 
 								PointOne = actualPos;
@@ -255,12 +253,9 @@ public class MapPanel extends JPanel {
 							}
 						}
 				}
-				System.out.println("P1 lat " + getLatPointOne() + " lng "+ getLngPointOne());
-				System.out.println("P2 lat " + getLatPointTwo() + " lng " + getLngPointTwo());
+			
 				repaint();
-			} catch (NoninvertibleTransformException e1) {
-				System.out.println("ERROR: NonInvertible");
-			}
+
 		}
 
 		@Override
@@ -286,6 +281,7 @@ public class MapPanel extends JPanel {
 			
 			xOffset += newX;
 			yOffset += newY;
+			center.setLocation(center.getX()- newX, center.getY()-newY);
 			
 			repaint();
 		}
@@ -306,7 +302,9 @@ public class MapPanel extends JPanel {
 		}
 		//These methods do nothing
         @Override
-		public void mouseReleased(MouseEvent e) {}
+		public void mouseReleased(MouseEvent e) {
+
+        }
         @Override
 		public void mouseEntered(MouseEvent e) {}
         @Override

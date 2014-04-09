@@ -3,6 +3,7 @@ package edu.brown.cs032.tmercuri.ja11.maps.gui;
 import java.awt.geom.Point2D;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
@@ -20,6 +21,13 @@ public class MapCache {
 	
 	private MapData map;
 	private MapPanel display;
+	double leftX;
+
+	double rightX;
+
+	double topY;
+
+	double bottomY;
 	
 	private Executor pool;
 	
@@ -50,43 +58,66 @@ public class MapCache {
 		for (int i = 1; i < 10; i++){
 			cache.add(new ArrayList<MapWay>());
 		}
+
 		this.pool = Executors.newCachedThreadPool();
 		this.converter = display.getConverter();
-		this.width = display.getWidth();
-		this.height = display.getHeight();
-		this.center = display.getCenter();
+		this.width =2* display.getWidth();
+		this.height = 2*display.getHeight();
+		this.center =new Point2D.Double();
+		center.setLocation(display.getCenter());
+		leftX = 0;
+		rightX = 0;
+		topY = 0;
+		bottomY = 0;
+		resetLimits();
 		try{
 		LatLng point = map.getNearestPoint(41.827404, -71.399323);
         converter = new LatLngToPixel(point.getLat(), point.getLng());
-        center.setLocation(converter.LngToPixel(point.getLng()), converter.LatToPixel(point.getLat()));
-		//for (int i = 0; i < 9 ; i++){
-		//	pool.execute(new BlockFinder(i));
-		//}
-        pool.execute(new BlockFinder(3));
+       // center.setLocation(converter.LngToPixel(point.getLng()), converter.LatToPixel(point.getLat()));
+		for (int i = 0; i < 9 ; i++){
+			pool.execute(new BlockFinder(i));
+		}
+        //pool.execute(new BlockFinder(1));
         //pool.execute(new BlockFinder(4));
 		}
 		catch (IOException e){
 			System.out.println("ERROR: in cache initalization the map acted dumb");
 		}
 	}
+	
+	private void resetLimits(){
+		leftX = center.getX() - width;
+		rightX = center.getX() + width;
+		topY = center.getY()  - height;
+	    bottomY = center.getY() + height;
+	}
 
 	
 	public void monitor(){
-		if (display.getCenter().getX() < (center.getX() - width)){
+		//System.out.println("X check:" + display.getCenter().getX()+ " vs "+ (center.getX() - width));
+		//System.out.println("Y check:" + display.getCenter().getY()+ " vs "+ (center.getY() - height));
+		double displayX = display.getCenter().getX();
+		double displayY = display.getCenter().getY();
+
+		if (displayX < leftX){
 			System.out.println("moving left");
 			moveLeft();
+			//resetLimits();
 		}
-		if (display.getCenter().getX() > (center.getX()+ width)){
+		else if (displayX > rightX){
 			System.out.println("moving right");
 			moveRight();
+			//resetLimits();
 		}
-		if (display.getCenter().getY() < (center.getY() - height)){
+		else if (displayY < topY){
 			System.out.println("moving up");
 			moveUp();
+			//resetLimits();
 		}
-		if (display.getCenter().getY() > (center.getY() + height)){
+		else if (displayY > bottomY){
 			System.out.println("moving down");
 			moveDown();
+			//resetLimits();
 		}
 		
 	}
@@ -115,82 +146,90 @@ public class MapCache {
 		// Establish the two limiting corners of the block 
 		switch (blockIndex){
 		case 0:{
-			topLat = initialLat + 2*converter.pixelToLatDistance(display.getHeight());
-			topLng = initialLng - 2*converter.pixelToLngDistance(display.getWidth());
-			bottomLat = initialLat + converter.pixelToLatDistance(display.getHeight());
-			bottomLng = initialLng - converter.pixelToLngDistance(display.getWidth());
+			topLat = initialLat + 3*converter.pixelToLatDistance((int) height);
+			topLng = initialLng - 3*converter.pixelToLngDistance((int)width);
+			bottomLat = initialLat + converter.pixelToLatDistance((int)height);
+			bottomLng = initialLng - converter.pixelToLngDistance((int)width);
 			break;
 		}
 		case 1: {
-			topLat = initialLat + 2*converter.pixelToLatDistance(display.getHeight());
-			topLng = initialLng - converter.pixelToLngDistance(display.getWidth());
-			bottomLat = initialLat + converter.pixelToLatDistance(display.getHeight());
-			bottomLng = initialLng + converter.pixelToLngDistance(display.getWidth());
+			topLat = initialLat + 3*converter.pixelToLatDistance((int)height);
+			topLng = initialLng - converter.pixelToLngDistance((int)width);
+			bottomLat = initialLat + converter.pixelToLatDistance((int)height);
+			bottomLng = initialLng + converter.pixelToLngDistance((int)width);
 			break;
 		}
 		case 2: {
-			topLat = initialLat + 2*converter.pixelToLatDistance(display.getHeight());
-			topLng = initialLng + converter.pixelToLngDistance(display.getWidth());
-			bottomLat = initialLat + converter.pixelToLatDistance(display.getHeight());
-			bottomLng = initialLng + 2*converter.pixelToLngDistance(display.getWidth());
+			topLat = initialLat + 3*converter.pixelToLatDistance((int)height);
+			topLng = initialLng + converter.pixelToLngDistance((int)width);
+			bottomLat = initialLat + converter.pixelToLatDistance((int)height);
+			bottomLng = initialLng + 3*converter.pixelToLngDistance((int)width);
 			break;
 		}
 		case 3: {
-			System.out.println("in 3");
-			topLat = initialLat + 7*converter.pixelToLatDistance(display.getHeight());
-			topLng = initialLng - 5*converter.pixelToLngDistance(display.getWidth());
-			bottomLat = initialLat + 4 *converter.pixelToLatDistance(display.getHeight());
-			bottomLng = initialLng - 3* converter.pixelToLngDistance(display.getWidth());
+			topLat = initialLat + converter.pixelToLatDistance((int)height);
+			topLng = initialLng - 3*converter.pixelToLngDistance((int)width);
+			bottomLat = initialLat -converter.pixelToLatDistance((int)height);
+			bottomLng = initialLng - converter.pixelToLngDistance((int)width);
 			break;
 		}
 		case 4: {
-			topLat = initialLat + converter.pixelToLatDistance(display.getHeight());
-			topLng = initialLng - converter.pixelToLngDistance(display.getWidth());
-			bottomLat = initialLat - converter.pixelToLatDistance(display.getHeight());
-			bottomLng = initialLng + converter.pixelToLngDistance(display.getWidth());
+			topLat = initialLat + converter.pixelToLatDistance((int)height);
+			topLng = initialLng - converter.pixelToLngDistance((int)width);
+			bottomLat = initialLat - converter.pixelToLatDistance((int)height);
+			bottomLng = initialLng + converter.pixelToLngDistance((int)width);
 			break;
 		}
 		case 5: {
-			topLat = initialLat + converter.pixelToLatDistance(display.getHeight());
-			topLng = initialLng - converter.pixelToLngDistance(display.getWidth());
-			bottomLat = initialLat - converter.pixelToLatDistance(display.getHeight());
-			bottomLng = initialLng + converter.pixelToLngDistance(display.getWidth());
+			topLat = initialLat + converter.pixelToLatDistance((int)height);
+			topLng = initialLng + converter.pixelToLngDistance((int)width);
+			bottomLat = initialLat - converter.pixelToLatDistance((int)height);
+			bottomLng = initialLng + 3*converter.pixelToLngDistance((int)width);
 			break;
 		}
 		case 6: {
-			topLat = initialLat - converter.pixelToLatDistance(display.getHeight());
-			topLng = initialLng - 2*converter.pixelToLngDistance(display.getWidth());
-			bottomLat = initialLat - 2*converter.pixelToLatDistance(display.getHeight());
-			bottomLng = initialLng - converter.pixelToLngDistance(display.getWidth());
+			topLat = initialLat - converter.pixelToLatDistance((int)height);
+			topLng = initialLng - 3*converter.pixelToLngDistance((int)width);
+			bottomLat = initialLat - 3*converter.pixelToLatDistance((int)height);
+			bottomLng = initialLng - converter.pixelToLngDistance((int)width);
 			break;
 		}
 		case 7: {
-			topLat = initialLat - converter.pixelToLatDistance(display.getHeight());
-			topLng = initialLng - converter.pixelToLngDistance(display.getWidth());
-			bottomLat = initialLat - 2*converter.pixelToLatDistance(display.getHeight());
-			bottomLng = initialLng + converter.pixelToLngDistance(display.getWidth());
+			topLat = initialLat - converter.pixelToLatDistance((int)height);
+			topLng = initialLng - converter.pixelToLngDistance((int)width);
+			bottomLat = initialLat - 3*converter.pixelToLatDistance((int)height);
+			bottomLng = initialLng + converter.pixelToLngDistance((int)width);
 			break;
 		}
 		case 8: {
-			topLat = initialLat + converter.pixelToLatDistance(display.getHeight());
-			topLng = initialLng - converter.pixelToLngDistance(display.getWidth());
-			bottomLat = initialLat - converter.pixelToLatDistance(display.getHeight());
-			bottomLng = initialLng + converter.pixelToLngDistance(display.getWidth());
+			topLat = initialLat + converter.pixelToLatDistance((int)height);
+			topLng = initialLng + converter.pixelToLngDistance((int)width);
+			bottomLat = initialLat - 3*converter.pixelToLatDistance((int)height);
+			bottomLng = initialLng + 3*converter.pixelToLngDistance((int)width);
 			break;
 		}
 		default: {
-			topLat = initialLat - converter.pixelToLatDistance(display.getHeight());
-			topLng = initialLng + converter.pixelToLngDistance(display.getWidth());
-			bottomLat = initialLat - 2*converter.pixelToLatDistance(display.getHeight());
-			bottomLng = initialLng + 2*converter.pixelToLngDistance(display.getWidth());
+			topLat = initialLat - converter.pixelToLatDistance((int)height);
+			topLng = initialLng + converter.pixelToLngDistance((int)width);
+			bottomLat = initialLat - 2*converter.pixelToLatDistance((int)height);
+			bottomLng = initialLng + 2*converter.pixelToLngDistance((int)width);
 		}
 		}
-		try {
-			cache.set(blockIndex, map.getAllBetween(topLat, topLng, bottomLat, bottomLng));
-			System.out.println("done with"+ blockIndex);
-		} catch (IOException e) {
-			System.out.println("ERROR: In the cache, the map produced an IO error"+blockIndex);
-		}
+	//	try {
+			cache.set(blockIndex, testFillBlock(topLat, topLng, bottomLat, bottomLng));
+			//cache.set(blockIndex, map.getAllBetween(topLat, topLng, bottomLat, bottomLng));
+	//	} catch (IOException e) {
+	//		System.out.println("ERROR: In the cache, the map produced an IO error"+blockIndex);
+	//	}
+	}
+	
+	private List<MapWay> testFillBlock(double topLat, double topLng, double bottomLat, double bottomLng){
+		List<MapWay> roads = new ArrayList<MapWay>();
+		roads.add(new MapWay("top", null, topLat, topLng, null, topLat, bottomLng, null));
+		roads.add(new MapWay("bottom", null, bottomLat, topLng, null, bottomLat, bottomLng, null));
+		roads.add(new MapWay("left", null, topLat, topLng, null, bottomLat, topLng, null));
+		roads.add(new MapWay("right", null, topLat, bottomLng, null, bottomLat, bottomLng, null));
+		return roads;
 	}
 
 	
@@ -216,6 +255,7 @@ public class MapCache {
 	}
 	
 	private void moveLeft(){
+
 		center.setLocation(center.getX() - width, center.getY());
 		for (int i = 0; i< 7; i+=3){
 			cache.set(i, cache.get(i+1));
@@ -229,6 +269,7 @@ public class MapCache {
 	}
 	
 	private void moveRight(){
+
 		center.setLocation(center.getX() + width, center.getY());
 		for (int i = 2; i< 9; i+=3){
 			cache.set(i, cache.get(i-1));

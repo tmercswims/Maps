@@ -62,6 +62,7 @@ public class Maps {
     }
     
     private static void commandLineInterface(MapData map) throws IOException {
+    	System.out.println("ready");
         Scanner s = new Scanner(System.in);
         while (s.hasNextLine()) {
             List<List<String>> path;

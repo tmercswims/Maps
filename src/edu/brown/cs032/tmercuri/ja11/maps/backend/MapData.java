@@ -46,9 +46,12 @@ public class MapData {
      */
     public List<List<String>> getPath(String st1, String cst1, String st2, String cst2) throws IOException {
         String inter1 = graph.findIntersection(st1, cst1);
+        System.out.println("inter1 is "+ inter1);
         String inter2 = graph.findIntersection(st2, cst2);
+        System.out.println("inter2 is "+ inter2);
         graph.computePathA(inter1, inter2);
-        return graph.returnShortestPathToFromA(inter2, inter1);
+        List<List<String>> result = graph.returnShortestPathToFromA(inter2, inter1);
+        return result;
     }
     
     /**
@@ -62,8 +65,11 @@ public class MapData {
      */
     public List<List<String>> getPath(double lat1, double lng1, double lat2, double lng2) throws IOException {
         String inter1 = getNearestPointTo(lat1, lng1);
+        System.out.println("inter1 is "+ inter1);
         String inter2 = getNearestPointTo(lat2, lng2);
+        System.out.println("inter2 is "+ inter2);
         graph.computePathA(inter1, inter2);
+        System.out.println("we've computed the shortest path");
         return graph.returnShortestPathToFromA(inter2, inter1);
     }
     
@@ -165,4 +171,6 @@ public class MapData {
     private Graphable<String> getGraphableForGraph(String waysFilename, String nodesFilename, String indexFilename) throws IOException {
         return new MapsGraphable(new TSVBinarySearch(waysFilename), new TSVBinarySearch(nodesFilename), new TSVBinarySearch(indexFilename));
     }
+    
+
 }

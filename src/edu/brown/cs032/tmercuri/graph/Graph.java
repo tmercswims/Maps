@@ -122,6 +122,7 @@ public class Graph<T> {
     public String findIntersection(T street, T crossStreet) throws IOException {
         List<String> nodesOnStreet = g.getNodesOnStreet(street);
         List<String> nodesOnCrossStreet = g.getNodesOnStreet(crossStreet);
+
         
         // intersect the two lists
         for (int i = nodesOnStreet.size() - 1; i > -1; i--) {
@@ -130,7 +131,6 @@ public class Graph<T> {
                 nodesOnStreet.remove(str);
             }
         }
-        
         return nodesOnStreet.get(0);
     }
     

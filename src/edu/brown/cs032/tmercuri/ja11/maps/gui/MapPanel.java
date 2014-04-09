@@ -166,11 +166,22 @@ public class MapPanel extends JPanel {
      */
     public void addWays(List<MapWay> newWays) {
         for (MapWay way : newWays){
-        	toDisplay.put(way, 1.0);
+        	if (!toDisplay.containsKey(way)){
+        		toDisplay.put(way, 1.0);
+        	}
         }
         repaint();
     }
-	
+    
+    /** 
+     * 
+     */
+	public void addTraffic(Collection<MapWay> newWays, double value){
+		for (MapWay way: newWays){
+			toDisplay.put(way, value);
+		}
+		repaint();
+	}
 	/**
 	 * 
 	 * @param x, the x-coordinate of the point to be in the middle of the panel
@@ -227,9 +238,9 @@ public class MapPanel extends JPanel {
 				transformNow.scale(scale, scale);
 				AffineTransform inverse = transformNow.createInverse();
 				if (e.getClickCount() == 2){
-					Point2D mousePos = new Point2D.Double(e.getX(), e.getY());
-					Point2D actualPos = new Point2D.Double();
-					inverse.transform(mousePos, actualPos);
+					//Point2D mousePos = new Point2D.Double(e.getX(), e.getY());
+					Point2D actualPos = getTranslatedPoint(e.getX(), e.getY());//new Point2D.Double();
+					//inverse.transform(mousePos, actualPos);
 					switch (whichPoint){
 						case P1: { 
 								PointOne = actualPos;

@@ -85,7 +85,7 @@ public class MapWay {
     }
     
     /**
-     *
+     * Gets the ID of this way.
      * @return
      */
     public String getID() {
@@ -93,7 +93,7 @@ public class MapWay {
     }
     
     /**
-     *
+     * Gets the ID of this way's start node.
      * @return
      */
     public String getStartID() {
@@ -101,7 +101,7 @@ public class MapWay {
     }
     
     /**
-     *
+     * Gets the start lat of this way.
      * @return
      */
     public double getStartLat() {
@@ -109,7 +109,7 @@ public class MapWay {
     }
     
     /**
-     *
+     * Gets the start lng of this way.
      * @return
      */
     public double getStartLng() {
@@ -117,7 +117,7 @@ public class MapWay {
     }
     
     /**
-     *
+     * Gets the end lat of this way.
      * @return
      */
     public double getEndLat() {
@@ -125,7 +125,7 @@ public class MapWay {
     }
     
     /**
-     *
+     * Gets the end lng of this way.
      * @return
      */
     public double getEndLng() {
@@ -133,7 +133,15 @@ public class MapWay {
     }
     
     /**
-     *
+     * Gets the ID of this way's end node.
+     * @return
+     */
+    public String getEndID() {
+        return this.endNodeID;
+    }
+    
+    /**
+     * Gets the name of the street that this way is a part of.
      * @return
      */
     public String getName() {
@@ -141,7 +149,7 @@ public class MapWay {
     }
     
     /**
-     *
+     * Gets the color of this way.
      * @return
      */
     public Color getColor() {
@@ -149,7 +157,7 @@ public class MapWay {
     }
     
     /**
-     *
+     * Gets the start X pixel of this way.
      * @return
      */
     public int getStartPixelX(){
@@ -157,7 +165,7 @@ public class MapWay {
     }
     
     /**
-     *
+     * Gets the start Y pixel of this way.
      * @return
      */
     public int getStartPixelY(){
@@ -165,7 +173,7 @@ public class MapWay {
     }
     
     /**
-     *
+     * Gets the end X pixel of this way.
      * @return
      */
     public int getEndPixelX(){
@@ -173,7 +181,7 @@ public class MapWay {
     }
     
     /**
-     *
+     * Gets the end Y pixel of this way.
      * @return
      */
     public int getEndPixelY(){
@@ -181,7 +189,7 @@ public class MapWay {
     }
     
     /**
-     *
+     * converts the 
      * @param converter
      */
     public void convert(LatLngToPixel converter){

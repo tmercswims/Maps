@@ -6,22 +6,15 @@ import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
-import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.net.URL;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 import javax.swing.BorderFactory;
-import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -162,11 +155,11 @@ public class MapsFrame extends JFrame {
         /*List<Image> icons = new ArrayList<>();
         URL iconURL = getClass().getResource("/edu/brown/cs032/tmercuri/ja11/maps/gui/icon16.png");
         icons.add(new ImageIcon(iconURL).getImage());
-        iconURL = getClass().getResource("/src/edu/brown/cs032/tmercuri/ja11/maps/gui/icon32.png");
+        iconURL = getClass().getResource("/edu/brown/cs032/tmercuri/ja11/maps/gui/icon32.png");
         icons.add(new ImageIcon(iconURL).getImage());
-        iconURL = getClass().getResource("/src/edu/brown/cs032/tmercuri/ja11/maps/gui/icon64.png");
+        iconURL = getClass().getResource("/edu/brown/cs032/tmercuri/ja11/maps/gui/icon64.png");
         icons.add(new ImageIcon(iconURL).getImage());
-        iconURL = getClass().getResource("/src/edu/brown/cs032/tmercuri/ja11/maps/gui/icon128.png");
+        iconURL = getClass().getResource("/edu/brown/cs032/tmercuri/ja11/maps/gui/icon128.png");
         icons.add(new ImageIcon(iconURL).getImage());
         setIconImages(icons);*/
 

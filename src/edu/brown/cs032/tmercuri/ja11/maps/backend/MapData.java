@@ -78,7 +78,7 @@ public class MapData {
      * @return
      * @throws IOException
      */
-    public List<MapWay> getAllBetween(Double topLat, Double topLng, Double botLat, Double botLng) throws IOException {
+    public synchronized List<MapWay> getAllBetween(Double topLat, Double topLng, Double botLat, Double botLng) throws IOException {
         List<MapWay> mapWays = new ArrayList<>();
         
         List<List<String>> wayFileLines = graph.getBetween(botLat, topLat, topLng, botLng);

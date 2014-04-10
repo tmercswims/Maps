@@ -78,10 +78,10 @@ public class MapData {
      * @return
      * @throws IOException
      */
-    public synchronized List<MapWay> getAllBetween(Double topLat, Double topLng, Double botLat, Double botLng) throws IOException {
+    public List<MapWay> getAllBetween(Double topLat, Double topLng, Double botLat, Double botLng) throws IOException {
         List<MapWay> mapWays = new ArrayList<>();
         
-        List<List<String>> wayFileLines = graph.getBetween(botLat, topLat, topLng, botLng);
+        List<List<String>> wayFileLines = graph.getBetween(topLat, topLng, botLat, botLng);
         int idIndex = wayFileLines.get(0).indexOf("id");
         int startIndex = wayFileLines.get(0).indexOf("start");
         int endIndex = wayFileLines.get(0).indexOf("end");

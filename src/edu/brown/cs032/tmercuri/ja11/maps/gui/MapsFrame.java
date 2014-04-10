@@ -116,7 +116,7 @@ public class MapsFrame extends JFrame {
         right.setBorder(BorderFactory.createEmptyBorder(0, 0, 3, 3));
         
         master.add(inputArea, BorderLayout.NORTH);
-        master.add(right, BorderLayout.EAST);
+        //master.add(right, BorderLayout.EAST);
         
         mainPanel.addMouseListener(new MouseListener() {
 
@@ -172,6 +172,7 @@ public class MapsFrame extends JFrame {
      * @param newMap
      */
     public void setMap(MapData newMap) {
+        System.out.println("setting map");
         this.map = newMap;
         one.setMap(newMap);
         one.setEnabled(true);

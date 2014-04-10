@@ -54,8 +54,8 @@ public class MapCache {
 
 		this.pool = Executors.newCachedThreadPool();
 		this.converter = display.getConverter();
-		this.width = /*2*display.getWidth();*/converter.LngToPixel(0.0005);
-		this.height = /*2* display.getHeight(); */converter.LatToPixel(0.0005);
+		this.width = 2*display.getWidth();//converter.LngToPixel(0.0005);
+		this.height = 2*display.getHeight(); //converter.LatToPixel(0.0005);
 		this.center =new Point2D.Double();
 		center.setLocation(display.getCenter());
 

@@ -101,8 +101,8 @@ public class Graph<T> {
      * @return
      * @throws IOException
      */
-    public List<List<String>> getBetween(Double topLat, Double botLat, Double topLng, Double botLng) throws IOException {
-        return g.getBetween(topLat, botLat, topLng, botLng);
+    public List<List<String>> getBetween(Double topLat, Double topLng, Double botLat, Double botLng) throws IOException {
+        return g.getBetween(topLat, topLng, botLat, botLng);
     }
     
     /**

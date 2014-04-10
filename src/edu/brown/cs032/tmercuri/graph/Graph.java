@@ -129,25 +129,23 @@ public class Graph<T> {
     
     /**
      * Uses a modified Dijkstra's algorithm to find to shortest path from n1 to nN. Stops when nN has been reached in the shortest way possible.
-     * @param sourceName the source
-     * @param targetName the target
+     * @param sourceID the source
+     * @param targetID the target
      * @return the path
      * @throws IOException if any file cannot be read
      */
-    public synchronized List<List<T>> computePathA(T sourceName, T targetName) throws IOException {
+    public synchronized List<List<T>> computePath(T sourceID, T targetID) throws IOException {
         final Map<T,Double> minDistance = new HashMap<>();
         Map<T,T> minEdge = new HashMap<>();
         Map<T,T> previous = new HashMap<>();
         
         // get the ID versions of the names
-        T sourceID = g.getID(sourceName);
-        T targetID = g.getID(targetName);
         
         // if one is null, it is not in the graph
         if (sourceID == null) {
-            throw new IllegalArgumentException("source '" + sourceName + "' not present");
+            throw new IllegalArgumentException("source '" + sourceID + "' not present");
         } if (targetID == null) {
-            throw new IllegalArgumentException("target '" + targetName + "' not present");
+            throw new IllegalArgumentException("target '" + targetID + "' not present");
         }
         
         // min distance to the source is 0
@@ -194,7 +192,7 @@ public class Graph<T> {
                 }
             }
         }
-        return returnShortestPathToFromA(targetID, sourceID, minDistance, minEdge, previous);
+        return returnShortestPathToFrom(targetID, sourceID, minDistance, minEdge, previous);
     }
     
     private double heuristic(T from, double targetLat, double targetLng) throws IOException {
@@ -204,7 +202,7 @@ public class Graph<T> {
         return Math.sqrt((dx*dx)+(dy*dy));
     }
     
-    private List<List<T>> returnShortestPathToFromA(final T targetID, final T sourceID, final Map<T,Double> minDistance, Map<T,T> minEdge, Map<T,T> previous) throws IOException {
+    private List<List<T>> returnShortestPathToFrom(final T targetID, final T sourceID, final Map<T,Double> minDistance, Map<T,T> minEdge, Map<T,T> previous) throws IOException {
         final List<T> edges = new ArrayList<>();
         final List<T> nodes = new ArrayList<>();
         final List<T> endpoints = new ArrayList<>();

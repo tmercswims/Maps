@@ -22,6 +22,7 @@ public class ClientHandler implements Runnable {
     
     private final MapData map;
     private final ClientPool clients;
+    private final Socket client;
     private final BufferedReader input;
     private final PrintWriter output;
 
@@ -40,6 +41,7 @@ public class ClientHandler implements Runnable {
         
         this.map = map;
         this.clients = clients;
+        this.client = client;
         this.input = new BufferedReader(new InputStreamReader(client.getInputStream()));
         this.output = new PrintWriter(client.getOutputStream(), true);
     }
@@ -68,61 +70,87 @@ public class ClientHandler implements Runnable {
         synchronized (output) {
             output.println("BEGIN TRAFFIC");
             output.println(trafficInfo);
-            output.println("END TRAFFIC");
+            output.println("END");
             output.flush();
         }
     }
     
     /**
-     * Sends a bunch of MapWays (as text) that are a path.
-     * @param path the list of MapWays that form a path
+     * Sends a message to the client that the server has quit.
      */
-    public void sendPath(List<MapWay> path) {
+    public void sendQuit() {
+        synchronized (output) {
+            output.println("QUIT");
+        }
+    }
+    
+    private void sendPath(List<MapWay> path) {
         synchronized (output) {
             output.println("BEGIN PATH");
             for (MapWay mw : path) {
-                output.println(mw.getID() + " " + mw.getStartID() + " " + mw.getStartLat() + " " + mw.getStartLng() + " " + mw.getEndID() + " " + mw.getEndLat() + " " + mw.getEndLng() + " " + mw.getName());
+                output.println(mw.getID() + "\t" + mw.getStartID() + "\t" + mw.getStartLat() + "\t" + mw.getStartLng() + "\t" + mw.getEndID() + "\t" + mw.getEndLat() + "\t" + mw.getEndLng() + "\t" + mw.getName());
             }
-            output.println("END PATH");
+            output.println("END");
+            output.flush();
+        }
+    }
+    
+    private void sendBlock(List<MapWay> block) {
+        synchronized (output) {
+            output.println("BEGIN BLOCK");
+            for (MapWay mw : block) {
+                output.println(mw.getID() + "\t" + mw.getStartID() + "\t" + mw.getStartLat() + "\t" + mw.getStartLng() + "\t" + mw.getEndID() + "\t" + mw.getEndLat() + "\t" + mw.getEndLng() + "\t" + mw.getName());
+            }
+            output.println("END");
+            output.flush();
+        }
+    }
+    
+    private void sendSuggestions(List<String> suggestions) {
+        synchronized (output) {
+            output.println("BEGIN SUGGESTIONS");
+            for (String sug : suggestions) {
+                output.println(sug);
+            }
+            output.println("END");
             output.flush();
         }
     }
     
     /**
-     * Sends a bunch of MapWays (as text) that are in a block.
-     * @param path the list of MapWays in the block
-     */
-    public void sendBlock(List<MapWay> path) {
-        synchronized (output) {
-            output.println("BEGIN BLOCK");
-            for (MapWay mw : path) {
-                output.println(mw.getID() + " " + mw.getStartID() + " " + mw.getStartLat() + " " + mw.getStartLng() + " " + mw.getEndID() + " " + mw.getEndLat() + " " + mw.getEndLng() + " " + mw.getName());
-            }
-            output.println("END BLOCK");
-            output.flush();
-        }
-    }
+	 * Close this socket and its related streams.
+	 * @throws IOException Passed up from socket
+	 */
+	public void kill() throws IOException {
+	    clients.remove(this);
+		input.close();
+		output.close();
+		client.close();
+	}
     
     private void parseLine(String msg) {
         switch (msg) {
             case "PATH":
-                doPath();
+                getPath();
                 break;
             case "POINTPATH":
-                doPointPath();
+                getPointPath();
                 break;
             case "BLOCK":
                 getBlock();
                 break;
+            case "SUGGESTIONS":
+                getSuggestions();
+                break;
         }
     }
     
-    private void doPath() {
+    private void getPath() {
         try {
             String line = input.readLine();
-            String[] lineWords = line.split("\" \"");
+            String[] lineWords = line.split("\t");
             
-            List<List<String>> path = map.getPath(lineWords[0].replaceAll("\"", ""), lineWords[1].replaceAll("\"", ""), lineWords[2].replaceAll("\"", ""), lineWords[3].replaceAll("\"", ""));
+            List<List<String>> path = map.getPath(lineWords[0], lineWords[1], lineWords[2], lineWords[3]);
             List<String> wayIDs = path.get(0);
             
             sendPath(map.wayIDsToMapWays(wayIDs));
@@ -131,10 +159,10 @@ public class ClientHandler implements Runnable {
         }
     }
     
-    private void doPointPath() {
+    private void getPointPath() {
         try {
             String line = input.readLine();
-            String[] lineWords = line.split(" ");
+            String[] lineWords = line.split("\t");
             
             List<List<String>> path = map.getPath(Double.parseDouble(lineWords[0]), Double.parseDouble(lineWords[1]), Double.parseDouble(lineWords[2]), Double.parseDouble(lineWords[3]));
             List<String> wayIDs = path.get(0);
@@ -148,11 +176,23 @@ public class ClientHandler implements Runnable {
     private void getBlock() {
         try {
             String line = input.readLine();
-            String[] lineWords = line.split(" ");
+            String[] lineWords = line.split("\t");
             
             List<MapWay> ways = map.getAllBetween(Double.parseDouble(lineWords[0]), Double.parseDouble(lineWords[1]), Double.parseDouble(lineWords[2]), Double.parseDouble(lineWords[3]));
             
             sendBlock(ways);
+        } catch (IOException ex) {
+            System.err.println("ERROR: " + ex.getMessage());
+        }
+    }
+    
+    private void getSuggestions() {
+        try {
+            String line = input.readLine().trim();
+            
+            List<String> suggs = map.getSuggestions(line);
+            
+            sendSuggestions(suggs);
         } catch (IOException ex) {
             System.err.println("ERROR: " + ex.getMessage());
         }

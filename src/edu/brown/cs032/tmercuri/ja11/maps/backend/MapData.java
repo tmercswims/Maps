@@ -49,13 +49,11 @@ public class MapData {
         System.out.println("inter1 is "+ inter1);
         String inter2 = graph.findIntersection(st2, cst2);
         System.out.println("inter2 is "+ inter2);
-        graph.computePathA(inter1, inter2);
-        List<List<String>> result = graph.returnShortestPathToFromA(inter2, inter1);
-        return result;
+        return graph.computePathA(inter1, inter2);
     }
     
     /**
-     * Gets the path between the point closest to (lat1, lng1) and (lat2, lng2).
+     * Gets the path between the points closest to (lat1, lng1) and (lat2, lng2).
      * @param lat1
      * @param lng1
      * @param lat2
@@ -68,9 +66,7 @@ public class MapData {
         System.out.println("inter1 is "+ inter1);
         String inter2 = getNearestPointTo(lat2, lng2);
         System.out.println("inter2 is "+ inter2);
-        graph.computePathA(inter1, inter2);
-        System.out.println("we've computed the shortest path");
-        return graph.returnShortestPathToFromA(inter2, inter1);
+        return graph.computePathA(inter1, inter2);
     }
     
     /**

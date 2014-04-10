@@ -5,6 +5,7 @@
 
 package edu.brown.cs032.tmercuri.ja11.traffic.server;
 
+import java.io.IOException;
 import java.util.LinkedList;
 
 /**
@@ -47,5 +48,31 @@ public class ClientPool {
 		for (ClientHandler client : clients) {
 			client.sendTrafficInfo(trafficInfo);
 		}
+	}
+    
+    /**
+     * Sends a server quit message to all clients.
+     */
+    public synchronized void broadcastQuitMessage() {
+        for (ClientHandler client : clients) {
+            client.sendQuit();
+        }
+    }
+    
+    /**
+	 * Close all ClientHandlers and empty the pool
+	 */
+	public synchronized void killall() {
+		broadcastQuitMessage();
+
+		for (ClientHandler client : clients) {
+			try {
+				client.kill();
+			} catch (IOException e) {
+				// There's nothing we can do here.
+			}
+		}
+
+		clients.clear();
 	}
 }

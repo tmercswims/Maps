@@ -10,12 +10,10 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.PriorityQueue;
 import java.util.Queue;
-import java.util.Set;
 
 /**
  * A "Graph," that does not use any Nodes or Vertices.
@@ -25,8 +23,6 @@ import java.util.Set;
 public class Graph<T> {
     
     private final Graphable<T> g;
-    private final Map<T,Double> minDistance;
-    private final Map<T,T> minEdge, previous;
     
     /**
      * A new Graph.
@@ -34,9 +30,6 @@ public class Graph<T> {
      */
     public Graph(Graphable<T> g) {
         this.g = g;
-        this.minDistance = new HashMap<>();
-        this.minEdge = new HashMap<>();
-        this.previous = new HashMap<>();
     }
     
     /**
@@ -135,64 +128,73 @@ public class Graph<T> {
     }
     
     /**
-     * Uses a modified A* algorithm to find to shortest path from n1 to nN.
-     * @param sourceID the source
-     * @param targetID the target
+     * Uses a modified Dijkstra's algorithm to find to shortest path from n1 to nN. Stops when nN has been reached in the shortest way possible.
+     * @param sourceName the source
+     * @param targetName the target
+     * @return the path
      * @throws IOException if any file cannot be read
      */
-    public void computePathA(T sourceID, T targetID) throws IOException {
-        final double targetLat = g.getLat(targetID);
-        final double targetLng = g.getLng(targetID);
+    public synchronized List<List<T>> computePathA(T sourceName, T targetName) throws IOException {
+        final Map<T,Double> minDistance = new HashMap<>();
+        Map<T,T> minEdge = new HashMap<>();
+        Map<T,T> previous = new HashMap<>();
+        
+        // get the ID versions of the names
+        T sourceID = g.getID(sourceName);
+        T targetID = g.getID(targetName);
         
         // if one is null, it is not in the graph
         if (sourceID == null) {
-            throw new IllegalArgumentException("source '" + sourceID + "' not present");
+            throw new IllegalArgumentException("source '" + sourceName + "' not present");
         } if (targetID == null) {
-            throw new IllegalArgumentException("target '" + targetID + "' not present");
+            throw new IllegalArgumentException("target '" + targetName + "' not present");
         }
         
         // min distance to the source is 0
         minDistance.put(sourceID, 0.0);
         // priority queue for faster looping
-        Queue<T> open = new PriorityQueue<>(512, new Comparator<T>() {
+        Queue<T> q = new PriorityQueue<>(512, new Comparator<T>() {
             @Override
             // compares based on the min distance to this node from the source
             public int compare(T o1, T o2) {
-                double distToo1, distToo2;
-                distToo1 = distToo2 = 0.0;
-                try {
-                    distToo1 = ((minDistance.get(o1) != null) ? minDistance.get(o1) : Double.POSITIVE_INFINITY) + heuristic(o1, targetLat, targetLng);
-                    distToo2 = ((minDistance.get(o2) != null) ? minDistance.get(o2) : Double.POSITIVE_INFINITY) + heuristic(o2, targetLat, targetLng);
-                } catch (IOException ex) {
-                    System.err.println("ERROR: " + ex.getMessage());
-                }
+                double distToo1 = ((minDistance.get(o1) != null) ? minDistance.get(o1) : Double.POSITIVE_INFINITY);
+                double distToo2 = ((minDistance.get(o2) != null) ? minDistance.get(o2) : Double.POSITIVE_INFINITY);
                 return Double.compare(distToo1, distToo2);
             }
         });
-        Set<T> closed = new HashSet<>();
+        // add the source
+        q.add(sourceID);
         
-        // add the source to open
-        open.add(sourceID);
-        
-        while (!open.isEmpty() && !open.peek().equals(targetID)) {
-            T current = open.poll();
-            closed.add(current);
+        boolean done = false;
+        // as long as the queue isn't empty
+        while (!q.isEmpty() && !done) {
+            // pop the closest thing
+            T u = q.poll();
+            // if it is what we want, then we're done
+            if (u.equals(targetID)) {
+                done = true;
+            }
             
-            for (RelationInfo<T> neighbor : g.getNeighbors(current)) {
-                double cost = minDistance.get(current) + neighbor.getWeight();
+            // for every neighbor...
+            for (RelationInfo<T> v : g.getNeighbors(u)) {
+                // extract info from the RelationInfo
+                T edge = v.getEdge();
+                double weight = v.getWeight();
+                // possible alt path
+                double distViaU = minDistance.get(u) + weight;
                 
-                if (open.contains(neighbor.getVID()) && cost < ((minDistance.get(neighbor.getVID()) != null) ? minDistance.get(neighbor.getVID()) : Double.POSITIVE_INFINITY)) {
-                    open.remove(neighbor.getVID());
-                } else if (closed.contains(neighbor.getVID()) && cost < ((minDistance.get(neighbor.getVID()) != null) ? minDistance.get(neighbor.getVID()) : Double.POSITIVE_INFINITY)) {
-                    closed.remove(neighbor.getVID());
-                } else if (!open.contains(neighbor.getVID()) && !closed.contains(neighbor.getVID())) {
-                    minDistance.put(neighbor.getVID(), cost);
-                    open.add(neighbor.getVID());
-                    previous.put(neighbor.getVID(), current);
-                    minEdge.put(neighbor.getVID(), neighbor.getEdge());
+                // if the nalt path is shorter, replace the information stored with this new path
+                if (distViaU < ((minDistance.get(v.getVID()) != null) ? minDistance.get(v.getVID()) : Double.POSITIVE_INFINITY)) {
+                    q.remove(v.getVID());
+                    minEdge.put(v.getVID(), edge);
+                    minDistance.put(v.getVID(), distViaU);
+                    previous.put(v.getVID(), u);
+                    q.add(v.getVID());
+                    
                 }
             }
         }
+        return returnShortestPathToFromA(targetID, sourceID, minDistance, minEdge, previous);
     }
     
     private double heuristic(T from, double targetLat, double targetLng) throws IOException {
@@ -202,49 +204,7 @@ public class Graph<T> {
         return Math.sqrt((dx*dx)+(dy*dy));
     }
     
-    /**
-     * Prints the path from targetStreetName to sourceName
-     * @param targetID
-     * @param sourceID
-     * @throws IOException 
-     */
-    public void printShortestPathToFromA(T targetID, T sourceID) throws IOException {
-        // Lists for edges and nodes on the path
-        List<T> edges = new ArrayList<>();
-        List<T> nodes = new ArrayList<>();
-        
-        // contruct the path, starting form the target and following the previouses
-        for (T n=targetID; n!=null; n=previous.get(n)) {
-            nodes.add(n);
-            edges.add(minEdge.get(n));
-        }
-        // the Lists need to be reversed
-        Collections.reverse(nodes);
-        Collections.reverse(edges);
-        
-        previous.clear();
-        minDistance.clear();
-        minEdge.clear();
-        
-        // if the first node is not the given source or the target and source are the same, then a path doesn't exist
-        if (!nodes.get(0).equals(sourceID) || targetID.equals(sourceID)) {
-            System.out.println(sourceID + " -/- " + targetID);
-        } // print the path, one connection at a time
-        else {
-            for (int i=1; i<nodes.size(); i++) {
-                System.out.println(nodes.get(i-1) + " -> " + nodes.get(i) + " : " + edges.get(i));
-            }
-        }
-    }
-    
-    /**
-     * Returns the shortest path, instead of printing it.
-     * @param targetID
-     * @param sourceID
-     * @return
-     * @throws IOException
-     */
-    public List<List<T>> returnShortestPathToFromA(final T targetID, final T sourceID) throws IOException {
+    private List<List<T>> returnShortestPathToFromA(final T targetID, final T sourceID, final Map<T,Double> minDistance, Map<T,T> minEdge, Map<T,T> previous) throws IOException {
         final List<T> edges = new ArrayList<>();
         final List<T> nodes = new ArrayList<>();
         final List<T> endpoints = new ArrayList<>();
@@ -259,10 +219,6 @@ public class Graph<T> {
         // the Lists need to be reversed
         Collections.reverse(nodes);
         Collections.reverse(edges);
-        
-        previous.clear();
-        minDistance.clear();
-        minEdge.clear();
         
         List<List<T>> ret = new ArrayList<>();
         ret.add(edges);

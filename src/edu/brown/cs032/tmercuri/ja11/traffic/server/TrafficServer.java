@@ -16,22 +16,26 @@ import java.util.concurrent.Executors;
  *
  * @author Thomas Mercurio
  */
-public class TrafficServer {
+public class TrafficServer extends Thread {
     
     private final MapData map;
     private final ServerSocket socket;
     private final ClientPool clients;
     private final Executor tPool;
+    private final String trafficBotHostname;
+    private final int trafficBotPort;
     
     /**
-     * Makes a new TrafficServer
+     * Makes a new TrafficServer.
      * @param ways the ways filename
      * @param nodes the nodes filename
      * @param index the index filename
      * @param serverPort the port that the server should start on
-     * @throws IOException 
+     * @param trafficBotHostname the hostname that the traffic bot is on
+     * @param trafficBotPort the port that the traffic bot is on
+     * @throws IOException if an I/O error occurs
      */
-    public TrafficServer(String ways, String nodes, String index, int serverPort) throws IOException {
+    public TrafficServer(String ways, String nodes, String index, int serverPort, String trafficBotHostname, int trafficBotPort) throws IOException {
         if (serverPort <= 1024) {
 			throw new IllegalArgumentException("Ports under 1024 are reserved!");
 		}
@@ -40,26 +44,15 @@ public class TrafficServer {
         this.socket = new ServerSocket(serverPort);
         this.clients = new ClientPool();
         this.tPool = Executors.newFixedThreadPool(9);
+        this.trafficBotHostname = trafficBotHostname;
+        this.trafficBotPort = trafficBotPort;
     }
 
     /**
-     * @param args the command line arguments
+     * Runs this server.
      */
-    public static void main(String[] args) {
-        try {
-            if (args.length != 6) {
-                throw new IllegalArgumentException("Usage: trafficServer <ways> <nodes> <index> <hostname> <traffic port> <server port>");
-            }
-            
-            TrafficServer trafficServer = new TrafficServer(args[0], args[1], args[2], Integer.parseInt(args[5]));
-            
-            trafficServer.go(args[3], Integer.parseInt(args[4]));
-        } catch (IllegalArgumentException | IOException ex) {
-            System.err.println("ERROR: " + ex.getMessage());
-        }
-    }
-    
-    private void go(String trafficBotHostname, int trafficBotPort) {
+    @Override
+    public void run() {
         tPool.execute(new TrafficBotListener(clients, trafficBotHostname, trafficBotPort));
         
         try {
@@ -69,5 +62,14 @@ public class TrafficServer {
 		} catch (IOException ex) {
 		    System.out.println("ERROR: " + ex.getMessage());
         }
+    }
+    
+    /**
+     * Stops waiting for connections, closes all connected clients, and closes this server's ServerSocket.
+     * @throws IOException if the socket is invalid
+     */
+    public void kill() throws IOException {
+        clients.killall();
+        socket.close();
     }
 }

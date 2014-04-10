@@ -111,9 +111,9 @@ public class MapPanel extends JPanel {
 			this.cache = new MapCache(mapData, this);         
 			repaint();
 			
-			//while (true){
-			//	cache.monitor();
-			//}
+			while (true){
+				cache.monitor();
+			}
         } catch (IOException e) {
 			System.out.println("ERROR: problem with IO");
         }
@@ -135,9 +135,7 @@ public class MapPanel extends JPanel {
 		g2d.setTransform(transformer);
 		// First draws the normal ways
 		g2d.setColor(Color.LIGHT_GRAY);
-		for (MapWay way : toDisplay.keySet()){
-			drawMapWay(g2d, way);
-		}
+		drawMapWays(g2d, toDisplay);
 		// Draws any points drawn by the user
 		g2d.setColor(Color.RED);
 		if (PointOne!= null){
@@ -153,7 +151,7 @@ public class MapPanel extends JPanel {
 		if (hasPath){
 			g2d.setColor(Color.MAGENTA);
 			for (MapWay way: pathWay){
-				drawMapWay(g2d, way);
+				drawPath(g2d, way);
 			}
 		}
 
@@ -202,13 +200,37 @@ public class MapPanel extends JPanel {
 	 * @param graphics, the graphics of the panel
 	 * @param way, the way to be drawn
 	 */
-	private void drawMapWay(Graphics2D graphics, MapWay way){
+	private void drawMapWays(Graphics2D graphics, Map <MapWay, Double> ways){
+		for (MapWay way : ways.keySet()){
 		way.convert(converter);
 		graphics.setStroke(new BasicStroke(4));
+		double trafficVal = ways.get(way);
+		if (trafficVal<= 1){
+			graphics.setColor(Color.LIGHT_GRAY);
+		}
+		else if (trafficVal<= 2){
+			graphics.setColor(Color.YELLOW);
+		}
+		else if (trafficVal <= 4){
+			graphics.setColor(Color.ORANGE);
+		}
+		else if (trafficVal <= 5){
+			graphics.setColor(Color.RED);
+		}
 		graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 		graphics.drawLine(way.getStartPixelX(), way.getStartPixelY(), way.getEndPixelX(), way.getEndPixelY());
+		}
 		
 	}
+	
+	private void drawPath (Graphics2D graphics, MapWay way){
+		way.convert(converter);
+		graphics.setStroke(new BasicStroke(4));
+		graphics.setColor(Color.MAGENTA);
+		graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+		graphics.drawLine(way.getStartPixelX(), way.getStartPixelY(), way.getEndPixelX(), way.getEndPixelY());
+	}
+	
 	
 	/***
 	 * Scroller deals with the translation by mouseclicking

@@ -62,12 +62,9 @@ public class MapCache {
 		try{
 		LatLng point = map.getNearestPoint(41.827404, -71.399323);
         converter = new LatLngToPixel(point.getLat(), point.getLng());
-		//for (int i = 0; i < 9 ; i++){
-		//	pool.execute(new BlockFinder(i));
-		//}
-        //pool.execute(new BlockFinder(1));
-        //pool.execute(new BlockFinder(2));
-        pool.execute(new BlockFinder(3));
+		for (int i = 0; i < 9 ; i++){
+			pool.execute(new BlockFinder(i));
+		}
 		}
 		catch (IOException e){
 			System.out.println("ERROR: in cache initalization the map acted dumb");
@@ -82,15 +79,18 @@ public class MapCache {
 		final double rightX = center.getX() + width;
 		final double topY = center.getY()  - height;
 	    final double bottomY = center.getY() + height;
+
 	    boolean hasMoved = false;
 		while (!hasMoved){
 			double displayX = (display.getCenter().getX());
 			double displayY = (display.getCenter().getY());
+			double buffer = Math.sqrt(Math.random());
+			//System.out.println("hello there");
 			//System.out.println(displayX+", " + displayY + " vs "+ center.getX()+ ", " + center.getY()+ " as reference");
 			//System.out.println("is "+ displayX + " between "+ leftX+ " and "+ rightX+ "?");
 			//System.out.println("is "+ displayY + " between "+ topY+ " and "+ bottomY+ "?");
 
-			if (displayX < leftX){
+	/*		if (displayX < leftX){
 				System.out.println("moving left");
 				hasMoved = true;
 				reFocusCenter(Direction.LEFT);
@@ -104,10 +104,10 @@ public class MapCache {
 				reFocusCenter(Direction.RIGHT);
 				moveRight();
 
-
+*
 				//center.setLocation(center.getX() + 2*width, center.getY());
 
-			}
+			}*/
 			if(displayY < topY){
 				System.out.println("moving up");
 				hasMoved = true;
@@ -117,7 +117,7 @@ public class MapCache {
 
 				//System.out.println("center is now relocated at "+ center.getX()+ ", "+ center.getY());
 			}
-			if(displayY > bottomY){
+			else if(displayY > bottomY){
 				System.out.println("moving down");
 				hasMoved = true;
 				reFocusCenter(Direction.DOWN);
@@ -125,6 +125,26 @@ public class MapCache {
 
 
 				//center.setLocation(center.getX(), center.getY()+ 2*height);
+
+			}
+			
+
+			else if (displayX < leftX){
+				System.out.println("moving left");
+				hasMoved = true;
+				reFocusCenter(Direction.LEFT);
+				moveLeft();
+
+				//System.out.println("center is now relocated at "+ center.getX()+ ", "+ center.getY());
+			}
+			else if (displayX > rightX){
+				System.out.println("moving right");
+				hasMoved = true;
+				reFocusCenter(Direction.RIGHT);
+				moveRight();
+
+
+				//center.setLocation(center.getX() + 2*width, center.getY());
 
 			}
 		
@@ -235,13 +255,15 @@ private void reFocusCenter(Direction direction){
 			bottomLng = initialLng + 2*converter.pixelToLngDistance((int)width);
 		}
 		}
-		try {
-			cache.set(blockIndex, map.getAllBetween(topLat,topLng, bottomLat, bottomLng));
-			cache.get(blockIndex).addAll(testFillBlock(topLat, topLng, bottomLat, bottomLng));
+		//try {
+			//cache.set(blockIndex, map.getAllBetween(topLat,topLng, bottomLat, bottomLng));
+			cache.set(blockIndex, testFillBlock(topLat, topLng, bottomLat, bottomLng));
 
-		} catch (IOException e) {
-			System.out.println("ERROR: In the cache, the map produced an IO error"+blockIndex);
-		}
+			//cache.get(blockIndex).addAll(testFillBlock(topLat, topLng, bottomLat, bottomLng));
+
+		//} catch (IOException e) {
+		//	System.out.println("ERROR: In the cache, the map produced an IO error"+blockIndex);
+		//}
 	}
 	
 	private List<MapWay> testFillBlock(double topLat, double topLng, double bottomLat, double bottomLng){
@@ -278,6 +300,19 @@ private void reFocusCenter(Direction direction){
 	}
 	
 	private void moveLeft(){
+		for (int i = 2; i < 9; i+=3){
+			cache.set(i, cache.get(i-1));
+		}
+		for (int i = 1; i< 8; i+=3){
+			cache.set(i, cache.get(i-1));
+		}
+		for (int i = 0; i< 7; i+=3){
+			pool.execute(new BlockFinder(i));
+		}
+	}
+	
+	private void moveRight(){
+
 		for (int i = 0; i< 7; i+=3){
 			cache.set(i, cache.get(i+1));
 		}
@@ -285,19 +320,6 @@ private void reFocusCenter(Direction direction){
 			cache.set(i, cache.get(i+1));
 		}
 		for (int i = 2; i < 9; i+=3){
-			pool.execute(new BlockFinder(i));
-		}
-	}
-	
-	private void moveRight(){
-
-		for (int i = 2; i< 9; i+=3){
-			cache.set(i, cache.get(i-1));
-		}
-		for (int i = 1; i< 8; i+=3){
-			cache.set(i, cache.get(i-1));
-		}
-		for (int i = 0; i < 7; i+=3){
 			pool.execute(new BlockFinder(i));
 		}
 	}

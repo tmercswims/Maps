@@ -108,6 +108,7 @@ public class MapPanel extends JPanel {
 	        converter = new LatLngToPixel(point.getLat(), point.getLng());
 	        centerOnPoint(converter.LngToPixel(initialLng), converter.LatToPixel(initialLat));
             // Find the roads
+
 			this.cache = new MapCache(mapData, this);         
 			repaint();
 			
@@ -400,6 +401,7 @@ public class MapPanel extends JPanel {
      * @param path
      */
     public void setPath(List<MapWay> path) {
+    	System.out.println("has a pth");
         this.hasPath = true;
         this.pathWay = path;
         repaint();

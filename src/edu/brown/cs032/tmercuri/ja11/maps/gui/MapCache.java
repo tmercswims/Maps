@@ -54,14 +54,16 @@ public class MapCache {
 
 		this.pool = Executors.newCachedThreadPool();
 		this.converter = display.getConverter();
-		this.width =2* display.getWidth();
-		this.height = 2*display.getHeight();
+		this.width = /*2*display.getWidth();*/converter.LngToPixel(0.0005);
+		this.height = /*2* display.getHeight(); */converter.LatToPixel(0.0005);
 		this.center =new Point2D.Double();
 		center.setLocation(display.getCenter());
 
 		try{
 		LatLng point = map.getNearestPoint(41.827404, -71.399323);
         converter = new LatLngToPixel(point.getLat(), point.getLng());
+        pool.execute(new BlockFinder(4));
+
 		for (int i = 0; i < 9 ; i++){
 			pool.execute(new BlockFinder(i));
 		}
@@ -85,52 +87,28 @@ public class MapCache {
 			double displayX = (display.getCenter().getX());
 			double displayY = (display.getCenter().getY());
 			double buffer = Math.sqrt(Math.random());
-			//System.out.println("hello there");
-			//System.out.println(displayX+", " + displayY + " vs "+ center.getX()+ ", " + center.getY()+ " as reference");
-			//System.out.println("is "+ displayX + " between "+ leftX+ " and "+ rightX+ "?");
-			//System.out.println("is "+ displayY + " between "+ topY+ " and "+ bottomY+ "?");
-
-	/*		if (displayX < leftX){
-				System.out.println("moving left");
-				hasMoved = true;
-				reFocusCenter(Direction.LEFT);
-				moveLeft();
-
-				//System.out.println("center is now relocated at "+ center.getX()+ ", "+ center.getY());
-			}
-			if (displayX > rightX){
-				System.out.println("moving right");
-				hasMoved = true;
-				reFocusCenter(Direction.RIGHT);
-				moveRight();
-
-*
-				//center.setLocation(center.getX() + 2*width, center.getY());
-
-			}*/
+			
 			if(displayY < topY){
-				System.out.println("moving up");
+			//	System.out.println("moving up");
 				hasMoved = true;
 				reFocusCenter(Direction.UP);
 				moveUp(); 
 
 
-				//System.out.println("center is now relocated at "+ center.getX()+ ", "+ center.getY());
 			}
 			else if(displayY > bottomY){
-				System.out.println("moving down");
+				//System.out.println("moving down");
 				hasMoved = true;
 				reFocusCenter(Direction.DOWN);
 				moveDown();
 
 
-				//center.setLocation(center.getX(), center.getY()+ 2*height);
 
 			}
 			
 
 			else if (displayX < leftX){
-				System.out.println("moving left");
+				//System.out.println("moving left");
 				hasMoved = true;
 				reFocusCenter(Direction.LEFT);
 				moveLeft();
@@ -138,7 +116,7 @@ public class MapCache {
 				//System.out.println("center is now relocated at "+ center.getX()+ ", "+ center.getY());
 			}
 			else if (displayX > rightX){
-				System.out.println("moving right");
+				//System.out.println("moving right");
 				hasMoved = true;
 				reFocusCenter(Direction.RIGHT);
 				moveRight();
@@ -149,7 +127,7 @@ public class MapCache {
 			}
 		
 		}
-		System.out.println("weve moved");
+	//	System.out.println("weve moved");
 	}
 	
 	public List<MapWay> getCache(){
@@ -255,15 +233,18 @@ private void reFocusCenter(Direction direction){
 			bottomLng = initialLng + 2*converter.pixelToLngDistance((int)width);
 		}
 		}
-		//try {
-			//cache.set(blockIndex, map.getAllBetween(topLat,topLng, bottomLat, bottomLng));
-			cache.set(blockIndex, testFillBlock(topLat, topLng, bottomLat, bottomLng));
+
+		cache.set(blockIndex, testFillBlock(topLat, topLng, bottomLat, bottomLng));
+		display.addWays(cache.get(blockIndex));
+		try {
+			cache.get(blockIndex).addAll( map.getAllBetween(topLat,topLng, bottomLat, bottomLng));
+		//	cache.set(blockIndex, testFillBlock(topLat, topLng, bottomLat, bottomLng));
 
 			//cache.get(blockIndex).addAll(testFillBlock(topLat, topLng, bottomLat, bottomLng));
 
-		//} catch (IOException e) {
-		//	System.out.println("ERROR: In the cache, the map produced an IO error"+blockIndex);
-		//}
+		} catch (IOException e) {
+			System.out.println("ERROR: In the cache, the map produced an IO error"+blockIndex);
+		}
 	}
 	
 	private List<MapWay> testFillBlock(double topLat, double topLng, double bottomLat, double bottomLng){
@@ -282,6 +263,8 @@ private void reFocusCenter(Direction direction){
 		for (int i = 8; i > 2; i--){
 			cache.set(i, cache.get(i-3));
 		}
+		System.out.println("finding new block");
+
 		for (int i = 0; i < 3; i++){
 			pool.execute(new BlockFinder(i));
 		}
@@ -294,6 +277,8 @@ private void reFocusCenter(Direction direction){
 		for (int i = 0; i< 6; i++){
 			cache.set(i, cache.get(i+3));
 		}
+		System.out.println("finding new block");
+
 		for (int i = 6; i < 9; i++){
 			pool.execute(new BlockFinder(i));
 		}
@@ -306,6 +291,8 @@ private void reFocusCenter(Direction direction){
 		for (int i = 1; i< 8; i+=3){
 			cache.set(i, cache.get(i-1));
 		}
+		System.out.println("finding new block");
+
 		for (int i = 0; i< 7; i+=3){
 			pool.execute(new BlockFinder(i));
 		}
@@ -319,6 +306,8 @@ private void reFocusCenter(Direction direction){
 		for (int i = 1; i< 8; i+=3){
 			cache.set(i, cache.get(i+1));
 		}
+		System.out.println("finding new block");
+
 		for (int i = 2; i < 9; i+=3){
 			pool.execute(new BlockFinder(i));
 		}

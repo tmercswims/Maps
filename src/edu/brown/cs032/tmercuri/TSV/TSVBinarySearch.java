@@ -75,7 +75,7 @@ public class TSVBinarySearch {
      * @throws IllegalArgumentException if either field is not part of the file
      * @throws IOException if the file cannot be read
      */
-    public String lookup(String query, String giveField, String wantField) throws IllegalArgumentException, IOException {
+    public synchronized String lookup(String query, String giveField, String wantField) throws IllegalArgumentException, IOException {
         // get column numbers
         Integer giveColumn = columns.get(giveField);
         Integer wantColumn = columns.get(wantField);
@@ -147,7 +147,7 @@ public class TSVBinarySearch {
      * @return
      * @throws IOException
      */
-    public List<List<String>> getAllBetween(String topBound, String botBound, String keyField) throws IOException {
+    public synchronized List<List<String>> getAllBetween(String topBound, String botBound, String keyField) throws IOException {
         Integer keyColumn = columns.get(keyField);
         List<List<String>> linesToReturn = new ArrayList<>();
         linesToReturn.add(firstLine);
@@ -179,7 +179,7 @@ public class TSVBinarySearch {
             int cmp1 = res.compareTo(topBound);
             int cmp2 = res.compareTo(botBound);
             // it does
-            if (cmp1 == 0) {
+            if ((cmp1 == 0)||(top == bot)) {
                 // get back to the beginning of the line
                 seekToPrevNewLine();
                 // for duplicate keys

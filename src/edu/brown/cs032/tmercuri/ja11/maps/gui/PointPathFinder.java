@@ -41,7 +41,7 @@ public class PointPathFinder implements Runnable {
             path = map.getPath(s1, cs1, s2, cs2);
             System.out.println(path);
             List<String> ways = path.get(0);
-          //  System.out.println(ways);
+           System.out.println(ways);
             List<MapWay> mapWays = map.wayIDsToMapWays(ways.subList(1, ways.size()));
            // System.out.println(mapWays);
             for (MapWay mw : mapWays) {

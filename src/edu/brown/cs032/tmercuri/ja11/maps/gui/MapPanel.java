@@ -111,9 +111,9 @@ public class MapPanel extends JPanel {
 			this.cache = new MapCache(mapData, this);         
 			repaint();
 			
-			while (true){
-				cache.monitor();
-			}
+			//while (true){
+			//	cache.monitor();
+			//}
         } catch (IOException e) {
 			System.out.println("ERROR: problem with IO");
         }

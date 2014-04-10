@@ -21,13 +21,6 @@ public class MapCache {
 	
 	private MapData map;
 	private MapPanel display;
-	double leftX;
-
-	double rightX;
-
-	double topY;
-
-	double bottomY;
 	
 	private Executor pool;
 	
@@ -65,61 +58,78 @@ public class MapCache {
 		this.height = 2*display.getHeight();
 		this.center =new Point2D.Double();
 		center.setLocation(display.getCenter());
-		leftX = 0;
-		rightX = 0;
-		topY = 0;
-		bottomY = 0;
-		resetLimits();
+
 		try{
 		LatLng point = map.getNearestPoint(41.827404, -71.399323);
         converter = new LatLngToPixel(point.getLat(), point.getLng());
-       // center.setLocation(converter.LngToPixel(point.getLng()), converter.LatToPixel(point.getLat()));
-		for (int i = 0; i < 9 ; i++){
-			pool.execute(new BlockFinder(i));
-		}
+		//for (int i = 0; i < 9 ; i++){
+		//	pool.execute(new BlockFinder(i));
+		//}
         //pool.execute(new BlockFinder(1));
-        //pool.execute(new BlockFinder(4));
+        //pool.execute(new BlockFinder(2));
+        pool.execute(new BlockFinder(3));
 		}
 		catch (IOException e){
 			System.out.println("ERROR: in cache initalization the map acted dumb");
 		}
 	}
 	
-	private void resetLimits(){
-		leftX = center.getX() - width;
-		rightX = center.getX() + width;
-		topY = center.getY()  - height;
-	    bottomY = center.getY() + height;
-	}
+
 
 	
 	public void monitor(){
-		//System.out.println("X check:" + display.getCenter().getX()+ " vs "+ (center.getX() - width));
-		//System.out.println("Y check:" + display.getCenter().getY()+ " vs "+ (center.getY() - height));
-		double displayX = display.getCenter().getX();
-		double displayY = display.getCenter().getY();
+		final double leftX = center.getX() - width;
+		final double rightX = center.getX() + width;
+		final double topY = center.getY()  - height;
+	    final double bottomY = center.getY() + height;
+	    boolean hasMoved = false;
+		while (!hasMoved){
+			double displayX = (display.getCenter().getX());
+			double displayY = (display.getCenter().getY());
+			//System.out.println(displayX+", " + displayY + " vs "+ center.getX()+ ", " + center.getY()+ " as reference");
+			//System.out.println("is "+ displayX + " between "+ leftX+ " and "+ rightX+ "?");
+			//System.out.println("is "+ displayY + " between "+ topY+ " and "+ bottomY+ "?");
 
-		if (displayX < leftX){
-			System.out.println("moving left");
-			moveLeft();
-			//resetLimits();
-		}
-		else if (displayX > rightX){
-			System.out.println("moving right");
-			moveRight();
-			//resetLimits();
-		}
-		else if (displayY < topY){
-			System.out.println("moving up");
-			moveUp();
-			//resetLimits();
-		}
-		else if (displayY > bottomY){
-			System.out.println("moving down");
-			moveDown();
-			//resetLimits();
-		}
+			if (displayX < leftX){
+				System.out.println("moving left");
+				hasMoved = true;
+				reFocusCenter(Direction.LEFT);
+				moveLeft();
+
+				//System.out.println("center is now relocated at "+ center.getX()+ ", "+ center.getY());
+			}
+			if (displayX > rightX){
+				System.out.println("moving right");
+				hasMoved = true;
+				reFocusCenter(Direction.RIGHT);
+				moveRight();
+
+
+				//center.setLocation(center.getX() + 2*width, center.getY());
+
+			}
+			if(displayY < topY){
+				System.out.println("moving up");
+				hasMoved = true;
+				reFocusCenter(Direction.UP);
+				moveUp(); 
+
+
+				//System.out.println("center is now relocated at "+ center.getX()+ ", "+ center.getY());
+			}
+			if(displayY > bottomY){
+				System.out.println("moving down");
+				hasMoved = true;
+				reFocusCenter(Direction.DOWN);
+				moveDown();
+
+
+				//center.setLocation(center.getX(), center.getY()+ 2*height);
+
+			}
 		
+		}
+		System.out.println("weve moved");
 	}
 	
 	public List<MapWay> getCache(){
@@ -134,12 +144,22 @@ public class MapCache {
 	}
 
 	
+private enum Direction{ UP, DOWN, LEFT, RIGHT;}
 
+private void reFocusCenter(Direction direction){
+	System.out.println("center is being refocused to the"+ direction);
+	switch (direction){
+	case UP: center.setLocation(center.getX(), center.getY() - 2*height);  break;
+	case DOWN: center.setLocation(center.getX(), center.getY()  + 2*height); break;
+	case LEFT: center.setLocation(center.getX() - 2*width, center.getY());break;
+	case RIGHT: center.setLocation(center.getX() + 2*width, center.getY());break;
+	}
+}
 	
 	private void findInfoFor(int blockIndex){
 		// First, redefine so we can express everything in terms of its position to the top left of the central block
-		double baseX = center.getX() - center.getX()/2;
-		double baseY = center.getY() - center.getY()/2;
+		double baseX = center.getX();
+		double baseY = center.getY();
 		double initialLat = converter.pixelToLat((int)baseY);
 		double initialLng = converter.pixelToLng((int)baseX);
 		double topLat, topLng, bottomLat, bottomLng;
@@ -215,12 +235,13 @@ public class MapCache {
 			bottomLng = initialLng + 2*converter.pixelToLngDistance((int)width);
 		}
 		}
-	//	try {
-			cache.set(blockIndex, testFillBlock(topLat, topLng, bottomLat, bottomLng));
-			//cache.set(blockIndex, map.getAllBetween(topLat, topLng, bottomLat, bottomLng));
-	//	} catch (IOException e) {
-	//		System.out.println("ERROR: In the cache, the map produced an IO error"+blockIndex);
-	//	}
+		try {
+			cache.set(blockIndex, map.getAllBetween(topLat,topLng, bottomLat, bottomLng));
+			cache.get(blockIndex).addAll(testFillBlock(topLat, topLng, bottomLat, bottomLng));
+
+		} catch (IOException e) {
+			System.out.println("ERROR: In the cache, the map produced an IO error"+blockIndex);
+		}
 	}
 	
 	private List<MapWay> testFillBlock(double topLat, double topLng, double bottomLat, double bottomLng){
@@ -234,7 +255,8 @@ public class MapCache {
 
 	
 	private void moveUp(){
-		center.setLocation(center.getX(), center.getY()- height);
+		//center.setLocation(center.getX(), center.getY() - 2*height);
+
 		for (int i = 8; i > 2; i--){
 			cache.set(i, cache.get(i-3));
 		}
@@ -245,7 +267,8 @@ public class MapCache {
 	}
 	
 	private void moveDown(){
-		center.setLocation(center.getX(), center.getY()+ height);
+
+
 		for (int i = 0; i< 6; i++){
 			cache.set(i, cache.get(i+3));
 		}
@@ -255,8 +278,6 @@ public class MapCache {
 	}
 	
 	private void moveLeft(){
-
-		center.setLocation(center.getX() - width, center.getY());
 		for (int i = 0; i< 7; i+=3){
 			cache.set(i, cache.get(i+1));
 		}
@@ -270,7 +291,6 @@ public class MapCache {
 	
 	private void moveRight(){
 
-		center.setLocation(center.getX() + width, center.getY());
 		for (int i = 2; i< 9; i+=3){
 			cache.set(i, cache.get(i-1));
 		}
